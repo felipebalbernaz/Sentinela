@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block page_title %}Meus Boletos{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <div style="display: flex; gap: 1rem;">
+            <input type="text" class="form-control" placeholder="Buscar boletos..." style="width: 300px;">
+            <select class="form-control" style="width: 150px;">
+                <option value="">Todos Status</option>
+                <option value="pending">A Vencer</option>
+                <option value="paid">Pagos</option>
+                <option value="overdue">Vencidos</option>
+            </select>
+        </div>
+        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Novo Boleto</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Código de Barras</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Placeholder Data -->
+                <tr>
+                    <td>Aluguel Escritório</td>
+                    <td>34191.79001 01043.510047...</td>
+                    <td>10/12/2023</td>
+                    <td>R$ 1.200,00</td>
+                    <td><span class="status-badge status-pending">A Vencer</span></td>
+                    <td>
+                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
+                                class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-outline"
+                            style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i
+                                class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Manutenção Servidores</td>
+                    <td>23793.38128 60033.024528...</td>
+                    <td>15/12/2023</td>
+                    <td>R$ 450,00</td>
+                    <td><span class="status-badge status-pending">A Vencer</span></td>
+                    <td>
+                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
+                                class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-outline"
+                            style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i
+                                class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

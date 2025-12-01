@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Sentinela{% endblock %}
+
+{% block auth_content %}
+<div class="auth-container">
+    <div class="card auth-card">
+        <div class="auth-header">
+            <h1><i class="fa-solid fa-shield-halved"></i> Sentinela</h1>
+            <p class="text-light">Gestão inteligente de documentos financeiros</p>
+        </div>
+        <form action="{{ url_for('finance.dashboard') }}">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" placeholder="seu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Entrar</button>
+        </form>
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem;">
+            <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}"
+                    style="color: var(--primary-color); font-weight: 500;">Cadastre-se</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
