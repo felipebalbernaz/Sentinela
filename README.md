@@ -5,6 +5,11 @@ O **Sentinela** é uma aplicação para gestão de boletos e notas fiscais, perm
 
 Este projeto segue os princípios da **Programação Orientada a Objetos (POO)** e o **Princípio da Responsabilidade Única (SRP)**, estruturado em camadas para garantir manutenibilidade e escalabilidade.
 
+## Origem
+Somos alunos do **Bacharelado em Inteligência Artificial** da **Universidade Federal de Goiás** e estamos cursando a discplina de **Programação Orientada a Objetos (POO)**.
+
+Este repositório foi construído para anexarmos o web service produzido no decorrer do projeto.
+
 ## Arquitetura do Projeto
 
 O projeto será desenvolvido em **Python** utilizando o framework **Flask**. A arquitetura adotada separa a aplicação em camadas lógicas:
