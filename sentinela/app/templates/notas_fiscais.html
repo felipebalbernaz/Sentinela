@@ -27,33 +27,37 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Placeholder Data -->
-                <tr>
-                    <td>NF-0023</td>
-                    <td>Provedor Internet S.A.</td>
-                    <td>01/12/2023</td>
-                    <td>R$ 150,00</td>
-                    <td>Serviço</td>
-                    <td>
-                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-download"></i></button>
-                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-pen"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>NF-1092</td>
-                    <td>Papelaria Central</td>
-                    <td>28/11/2023</td>
-                    <td>R$ 89,90</td>
-                    <td>Produto</td>
-                    <td>
-                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-download"></i></button>
-                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-pen"></i></button>
-                    </td>
-                </tr>
+                {% if notas %}
+                    {% for nota in notas %}
+                    <tr>
+                        <td>{{ nota.codigo }}</td>
+                        <td>
+                            {% if nota.fornecedor %}
+                                <a href="{{ url_for('finance.detalhes_fornecedor', fornecedor_id=nota.fornecedor.id) }}" style="color: var(--primary-color); text-decoration: none; cursor: pointer; font-weight: 500;">
+                                    {{ nota.fornecedor.nome }}
+                                </a>
+                            {% else %}
+                                <span style="color: var(--text-light);">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ nota.recebimento.strftime('%d/%m/%Y') }}</td>
+                        <td>R$ {{ "%.2f"|format(nota.valor) }}</td>
+                        <td>{{ nota.tipo }}</td>
+                        <td>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
+                                    class="fa-solid fa-download"></i></button>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
+                                    class="fa-solid fa-pen"></i></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">
+                            <p style="color: var(--text-light);">Nenhuma nota fiscal cadastrada.</p>
+                        </td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

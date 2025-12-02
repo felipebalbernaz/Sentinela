@@ -12,16 +12,18 @@ class Boleto(db.Model):
     tipo = db.Column(db.String(50))
     descricao = db.Column(db.String(200))
     
-    # Chave estrangeira para Fornecedor (opcional, assumindo relacionamento)
-    # fornecedor_id = db.Column(db.Integer, db.ForeignKey('fornecedores.id'))
+    # Chave estrangeira para Fornecedor
+    fornecedor_id = db.Column(db.Integer, db.ForeignKey('fornecedores.id'))
+    fornecedor = db.relationship('Fornecedor', backref='boletos')
 
-    def __init__(self, status, codigo, vencimento, valor, tipo, descricao):
+    def __init__(self, status, codigo, vencimento, valor, tipo, descricao, fornecedor_id=None):
         self.status = status
         self.codigo = codigo
         self.vencimento = vencimento
         self.valor = valor
         self.tipo = tipo
         self.descricao = descricao
+        self.fornecedor_id = fornecedor_id
 
     def atualizar_status(self):
         # Lógica para atualizar status baseado no vencimento

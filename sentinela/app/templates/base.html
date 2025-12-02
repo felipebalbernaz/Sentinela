@@ -27,9 +27,12 @@
                 <a href="{{ url_for('finance.notas_fiscais') }}" class="nav-link {% if request.endpoint == 'finance.notas_fiscais' %}active{% endif %}">
                     <i class="fa-solid fa-file-invoice-dollar"></i> Notas Fiscais
                 </a>
+                <a href="{{ url_for('finance.fornecedores') }}" class="nav-link {% if request.endpoint == 'finance.fornecedores' %}active{% endif %}">
+                    <i class="fa-solid fa-building"></i> Fornecedores
+                </a>
             </nav>
             <div style="margin-top: auto;">
-                <a href="{{ url_for('main.index') }}" class="nav-link">
+                <a href="{{ url_for('auth.logout') }}" class="nav-link">
                     <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </a>
             </div>
@@ -39,10 +42,12 @@
             <div class="top-bar">
                 <h2 class="page-title">{% block page_title %}{% endblock %}</h2>
                 <div class="user-menu">
-                    <span>Olá, Usuário</span>
-                    <div class="avatar">
-                        <i class="fa-solid fa-circle-user fa-2x" style="color: var(--text-light)"></i>
-                    </div>
+                    <a href="{{ url_for('finance.perfil') }}" style="text-decoration: none; color: inherit; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>Olá, {{ usuario.nome }}</span>
+                        <div class="avatar">
+                            <i class="fa-solid fa-circle-user fa-2x" style="color: var(--text-light)"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
             {% block content %}{% endblock %}

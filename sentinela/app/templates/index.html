@@ -9,14 +9,19 @@
             <h1><i class="fa-solid fa-shield-halved"></i> Sentinela</h1>
             <p class="text-light">Gestão inteligente de documentos financeiros</p>
         </div>
-        <form action="{{ url_for('finance.dashboard') }}">
+        {% if error_message %}
+        <div class="alert alert-danger" style="margin-bottom: 1rem; padding: 0.75rem; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;">
+            {{ error_message }}
+        </div>
+        {% endif %}
+        <form action="{{ url_for('main.index') }}" method="POST">
             <div class="form-group">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-control" placeholder="seu@email.com" required>
+                <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
             </div>
             <div class="form-group">
                 <label for="password" class="form-label">Senha</label>
-                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Entrar</button>
         </form>
