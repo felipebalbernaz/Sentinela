@@ -3,6 +3,7 @@ from app.services.finance_service import FinanceService
 from app.repositories.usuario_repository import UsuarioRepository
 from app.repositories.fornecedor_repository import FornecedorRepository
 from functools import wraps
+from flask import request
 
 finance_bp = Blueprint('finance', __name__)
 finance_service = FinanceService()
@@ -52,6 +53,18 @@ def notas_fiscais():
     lista_notas = finance_service.listar_notas_fiscais()
     dados_usuario = obter_dados_usuario()
     return render_template('notas_fiscais.html', notas=lista_notas, usuario=dados_usuario)
+
+
+@finance_bp.route('/nota/<int:nota_id>/toggle-pago', methods=['POST'])
+@requer_autenticacao
+def toggle_pago_nota(nota_id):
+    nota = finance_service.obter_nota_por_id(nota_id)
+    if not nota:
+        return redirect(url_for('finance.notas_fiscais'))
+
+    novo_status = not nota.pago
+    finance_service.atualizar_status_nota(nota_id, novo_status)
+    return redirect(url_for('finance.notas_fiscais'))
 
 @finance_bp.route('/perfil')
 @requer_autenticacao

@@ -28,3 +28,20 @@ class FinanceRepository:
 
     def listar_notas_fiscais(self):
         return NotaFiscal.query.all()
+
+    def buscar_nota_por_id(self, nota_id: int):
+        return NotaFiscal.query.get(nota_id)
+
+    def atualizar_status_nota(self, nota_id: int, pago: bool):
+        try:
+            nota = NotaFiscal.query.get(nota_id)
+            if not nota:
+                return None
+            nota.pago = pago
+            db.session.add(nota)
+            db.session.commit()
+            return nota
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao atualizar status da nota: {e}")
+            raise e

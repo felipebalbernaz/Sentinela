@@ -116,6 +116,7 @@ with app.app_context():
             valor=5000.00,
             tipo='Entrada',
             descricao='Nota fiscal de entrada',
+            pago=False,
             fornecedor_id=forn1.id if forn1 else None
         )
         nota2 = NotaFiscal(
@@ -124,6 +125,7 @@ with app.app_context():
             valor=3000.00,
             tipo='Entrada',
             descricao='Nota fiscal de entrada',
+            pago=False,
             fornecedor_id=forn3.id if forn3 else None
         )
         db.session.add(nota1)

@@ -19,3 +19,9 @@ class FinanceService:
 
     def listar_notas_fiscais(self):
         return self.finance_repository.listar_notas_fiscais()
+
+    def obter_nota_por_id(self, nota_id: int):
+        return self.finance_repository.buscar_nota_por_id(nota_id)
+
+    def atualizar_status_nota(self, nota_id: int, pago: bool):
+        return self.finance_repository.atualizar_status_nota(nota_id, pago)

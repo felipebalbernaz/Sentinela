@@ -23,6 +23,7 @@
                     <th>Emissão</th>
                     <th>Valor</th>
                     <th>Tipo</th>
+                    <th>Pago</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -44,10 +45,24 @@
                         <td>R$ {{ "%.2f"|format(nota.valor) }}</td>
                         <td>{{ nota.tipo }}</td>
                         <td>
-                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                    class="fa-solid fa-download"></i></button>
-                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                    class="fa-solid fa-pen"></i></button>
+                            {% if nota.pago %}
+                                <span class="badge bg-success">Pago</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Não pago</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{{ url_for('finance.toggle_pago_nota', nota_id=nota.id) }}" style="display:inline">
+                                <button class="btn btn-sm" type="submit" title="Alternar status pago" style="padding: 0.25rem 0.5rem;">
+                                    {% if nota.pago %}
+                                        <i class="fa-solid fa-xmark" style="color:#ffffff"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-check" style="color:#000000"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-download"></i></button>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-pen"></i></button>
                         </td>
                     </tr>
                     {% endfor %}
