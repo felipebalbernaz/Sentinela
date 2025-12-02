@@ -14,47 +14,14 @@ O projeto será desenvolvido em **Python** utilizando o framework **Flask**. A a
 3.  **Services (Aplicação)**: Regras de negócio complexas e orquestração entre repositórios e models.
 4.  **Controllers/Views (Interface)**: Endpoints da API (Flask Blueprints) que recebem as requisições e retornam respostas.
 
+<<<<<<< HEAD
 ### Diagrama de Classes
+=======
+### Diagrama de Classes 
+>>>>>>> 939a304b224bab159891a066622b20ee1efc03a2
 
-```mermaid
-classDiagram
-    class Usuario {
-        +String nome
-        +String email
-        +String senha
-        +String telefone
-        +String endereco
-        +String cpf_cnpj
-    }
+<img width="692" height="668" alt="image" src="https://github.com/user-attachments/assets/39f0cd87-6589-45ff-b3ce-807bf7650761" />
 
-    class Fornecedor {
-        +String nome
-        +String cnpj
-        +String endereco
-        +String contato
-    }
-
-    class NotaFiscal {
-        +Float valor
-        +String numero
-        +Date data_emissao
-        +String status
-        +String tipo
-    }
-
-    class Boleto {
-        +Float valor
-        +Date vencimento
-        +String codigo
-        +String status
-        +String tipo
-    }
-
-    Usuario "1" *-- "0..*" NotaFiscal
-    Usuario "1" *-- "0..*" Boleto
-    Fornecedor "1" -- "0..*" NotaFiscal
-    Fornecedor "1" -- "0..*" Boleto
-```
 
 ## Estrutura de Diretórios
 
