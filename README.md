@@ -16,8 +16,7 @@ O projeto será desenvolvido em **Python** utilizando o framework **Flask**. A a
 
 ## Diagrama de Classes
 
-<img width="692" height="668" alt="image" src="https://github.com/user-attachments/assets/39f0cd87-6589-45ff-b3ce-807bf7650761" />
-
+<img width="692" height="668" alt="image" src="https://github.com/user-attachments/assets/a2e2562a-26f9-4963-8b89-8e2a5b255811" />
 
 ## Estrutura de Diretórios
 
