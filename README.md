@@ -21,48 +21,7 @@ O projeto será desenvolvido em **Python** utilizando o framework **Flask**. A a
 
 ### Diagrama de Classes 
 
-```mermaid
-classDiagram
-    class Usuario {
-        +String nome
-        +String email
-        +String senha
-        +String telefone
-        +String endereco
-        +String cpf_cnpj
-    }
-
-    class Fornecedor {
-        +String nome
-        +String cnpj
-        +String endereco
-        +String contato
-    }
-
-    class NotaFiscal {
-        +Float valor
-        +String numero
-        +Date data_emissao
-        +String status
-        +String tipo
-    }
-
-    class Boleto {
-        +Float valor
-        +Date vencimento
-        +String codigo
-        +String status
-        +String tipo
-    }
-
-    Usuario "1" *-- "0..*" NotaFiscal
-    Usuario "1" *-- "0..*" Boleto
-    Fornecedor "1" -- "0..*" NotaFiscal
-    Fornecedor "1" -- "0..*" Boleto
-```
-
-<img width="692" height="668" alt="image" src="https://github.com/user-attachments/assets/39f0cd87-6589-45ff-b3ce-807bf7650761" />
-
+<img width="700" height="668" alt="image" src="https://github.com/user-attachments/assets/39f0cd87-6589-45ff-b3ce-807bf7650761" />
 
 ## Estrutura de Diretórios
 
