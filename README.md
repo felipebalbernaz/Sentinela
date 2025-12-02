@@ -19,7 +19,7 @@ O projeto será desenvolvido em **Python** utilizando o framework **Flask**. A a
 3.  **Services (Aplicação)**: Regras de negócio complexas e orquestração entre repositórios e models.
 4.  **Controllers/Views (Interface)**: Endpoints da API (Flask Blueprints) que recebem as requisições e retornam respostas.
 
-### Diagrama de Classes (Baseado na imagem fornecida)
+### Diagrama de Classes 
 
 ```mermaid
 classDiagram
