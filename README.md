@@ -61,6 +61,9 @@ classDiagram
     Fornecedor "1" -- "0..*" Boleto
 ```
 
+<img width="692" height="668" alt="image" src="https://github.com/user-attachments/assets/39f0cd87-6589-45ff-b3ce-807bf7650761" />
+
+
 ## Estrutura de Diretórios
 
 ```
