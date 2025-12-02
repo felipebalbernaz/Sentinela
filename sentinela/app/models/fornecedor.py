@@ -1,38 +1,16 @@
-class Fornecedor():
-    def __init__(self,nome,cnpj,endereco,contato):
-        self.__nome = nome
-        self.__cnpj = cnpj
-        self.__endereco = endereco
-        self.__contato = contato
-    
-    @property             
-    def nome(self):
-        return self.__nome
+from app import db
 
-    @nome.setter     
-    def nome(self,nome):
-        self.__nome = nome
-    
-    @property
-    def cnpj(self):
-        return self.__cnpj
-    
-    @cnpj.setter
-    def cpnj(self, cnpj):
-        self.__cnpj = cnpj
-    
-    @property
-    def endereco(self):
-        return self.__endereco
-    
-    @endereco.setter
-    def endereco(self, endereco):
-        self.__endereco = endereco
-    
-    @property
-    def contato(self):
-        return self.__contato
+class Fornecedor(db.Model):
+    __tablename__ = 'fornecedores'
 
-    @contato.setter
-    def contato(self, contato):
-        self.__contato = contato
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    cnpj = db.Column(db.String(18), unique=True, nullable=False)
+    endereco = db.Column(db.String(200))
+    contato = db.Column(db.String(50))
+
+    def __init__(self, nome, cnpj, endereco, contato):
+        self.nome = nome
+        self.cnpj = cnpj
+        self.endereco = endereco
+        self.contato = contato

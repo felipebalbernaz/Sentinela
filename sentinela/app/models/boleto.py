@@ -1,97 +1,52 @@
-from datetime import datetime,date
-from random import randint
-from classefornecedor import Fornecedor
+from app import db
+from datetime import datetime
 
-class Boleto():
+class Boleto(db.Model):
+    __tablename__ = 'boletos'
 
-  def __init__(self,status,codigo,vencimento,valor,tipo,descricao):
-    self.__status=status
-    self.__codigo=codigo
-    self.__vencimento=vencimento
-    self.__valor=valor
-    self.__tipo=tipo
-    self.__descricao=descricao
-    self.__Fornecedor=None
-
-  def bloquear_modificacao(self, nome):
-      raise ValueError(f"Não é possível modificar o {nome} do boleto.")
-
-  @property
-  def status(self):
-    return self.__status
-  @status.setter
-  def status(self, alteracao):
-    raise ValueError(self.bloquear_modificacao("status"))
-
-  @property
-  def codigo(self):
-    return self.__codigo
-  @codigo.setter
-  def codigo(self, alteracao):
-    raise ValueError(self.bloquear_modificacao("código"))
-
-  @property
-  def vencimento(self):
-    return self.__vencimento
-  @vencimento.setter
-  def vencimento(self, alteracao):
-    raise ValueError(self.bloquear_modificacao("vencimento"))
-
-  @property
-  def valor(self):
-    return self.__valor
-  @valor.setter
-  def valor(self, alteracao):
-    raise ValueError(self.bloquear_modificacao("valor"))
-
-  @property
-  def tipo(self):
-    return self.__tipo
-  @tipo.setter
-  def tipo(self, alteracao):
-    raise ValueError(self.bloquear_modificacao("tipo"))
-
-  @property
-  def descricao(self):
-    return self.__descricao
-  @descricao.setter
-  def descricao(self, alteracao):
-    raise ValueError(self.bloquear_modificacao("descricao"))
-
-  @property
-  def Fornecedor(self):
-    return self.__Fornecedor
-  @Fornecedor.setter
-  def Fornecedor(self, Fornecedor):
-    self.__Fornecedor = Fornecedor
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(20), nullable=False)
+    codigo = db.Column(db.String(100), unique=True, nullable=False)
+    vencimento = db.Column(db.Date, nullable=False)
+    valor = db.Column(db.Float, nullable=False)
+    tipo = db.Column(db.String(50))
+    descricao = db.Column(db.String(200))
     
-  def atualizarStatus(self):
-    if datetime.combine(self.__vencimento, datetime.min.time()) >= datetime.now():
-      self.__status="A vencer"
-    else:
-      self.__status="Vencido"
+    # Chave estrangeira para Fornecedor (opcional, assumindo relacionamento)
+    # fornecedor_id = db.Column(db.Integer, db.ForeignKey('fornecedores.id'))
 
-  def calcularDataVencimento(self):
-    distanciaData=str(datetime.now()-datetime.combine(self.vencimento, datetime.min.time()))
-    if len(distanciaData.split(","))>1:
-      distanciaData=distanciaData.split(",")[0]
-      distanciaData=distanciaData.replace(' ','').replace('days','').replace('day','')
-      inteiroDias=int(distanciaData)
-      if inteiroDias<0:
-        return f"{inteiroDias*(-1)} dia(s) até que o boleto expire."
-      else:
-        return f"{inteiroDias} dia(s) desde que o boleto expirou."
-    else:
-      return "O boleto expirou hoje."
+    def __init__(self, status, codigo, vencimento, valor, tipo, descricao):
+        self.status = status
+        self.codigo = codigo
+        self.vencimento = vencimento
+        self.valor = valor
+        self.tipo = tipo
+        self.descricao = descricao
 
-  def exibirBoleto(self):
-    self.atualizarStatus()
-    return print(f"""
-      Status: {self.__status}
-      Código: {self.__codigo}
-      Vencimento: {str(self.__vencimento),self.calcularDataVencimento()}
-      Valor: R${self.__valor:.2f}
-      Tipo: {self.__tipo}
-      Descricao: {self.__descricao}
-      Fornecedor: {self.Fornecedor.nome}
-      """)
+    def atualizar_status(self):
+        # Lógica para atualizar status baseado no vencimento
+        if datetime.combine(self.vencimento, datetime.min.time()) >= datetime.now():
+            self.status = "A vencer"
+        else:
+            self.status = "Vencido"
+
+    def calcular_dias_vencimento(self):
+        delta = datetime.now().date() - self.vencimento
+        dias = delta.days
+        if dias < 0:
+            return f"{abs(dias)} dia(s) até que o boleto expire."
+        elif dias > 0:
+            return f"{dias} dia(s) desde que o boleto expirou."
+        else:
+            return "O boleto expira hoje."
+
+    def exibir_boleto(self):
+        self.atualizar_status()
+        return f"""
+          Status: {self.status}
+          Código: {self.codigo}
+          Vencimento: {self.vencimento} ({self.calcular_dias_vencimento()})
+          Valor: R${self.valor:.2f}
+          Tipo: {self.tipo}
+          Descrição: {self.descricao}
+          """
