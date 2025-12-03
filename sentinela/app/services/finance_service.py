@@ -9,25 +9,15 @@ class FinanceService:
         self.finance_repository = FinanceRepository()
         self.fornecedor_repository = FornecedorRepository()
 
-    def obter_resumo_dashboard(self):
+    def obter_resumo_dashboard(self, usuario_id: int):
         # Lógica de negócio para calcular totais
-        boletos = self.finance_repository.listar_boletos()
+        boletos = self.finance_repository.listar_boletos_por_usuario(usuario_id)
+        notas = self.finance_repository.listar_notas_fiscais_por_usuario(usuario_id)
         
-        # Calcular somas e contagens por status
-        a_vencer = {'valor': 0.0, 'quantidade': 0}
-        vencidos = {'valor': 0.0, 'quantidade': 0}
-        pagos = {'valor': 0.0, 'quantidade': 0}
-        
-        for boleto in boletos:
-            if boleto.status == 'A vencer':
-                a_vencer['valor'] += boleto.valor
-                a_vencer['quantidade'] += 1
-            elif boleto.status == 'Vencido':
-                vencidos['valor'] += boleto.valor
-                vencidos['quantidade'] += 1
-            elif boleto.status == 'Pago':
-                pagos['valor'] += boleto.valor
-                pagos['quantidade'] += 1
+        # Calcular totais
+        a_vencer = sum(b.valor for b in boletos if b.status == "A vencer")
+        vencidos = sum(b.valor for b in boletos if b.status == "Vencido")
+        pagos = sum(n.valor for n in notas if n.pago)
         
         return {
             "a_vencer": a_vencer,
@@ -35,65 +25,29 @@ class FinanceService:
             "pagos": pagos
         }
 
-    def obter_ultimos_documentos(self, limite=3):
-        """Retorna os últimos 3 documentos (boletos e notas fiscais) ordenados por data de criação"""
-        boletos = self.finance_repository.listar_boletos()
-        notas = self.finance_repository.listar_notas_fiscais()
-        
-        documentos = []
-        
-        # Adicionar boletos
-        for boleto in boletos:
-            documentos.append({
-                'tipo': 'Boleto',
-                'id': boleto.id,
-                'descricao': boleto.descricao,
-                'codigo': boleto.codigo,
-                'data': boleto.vencimento,
-                'valor': boleto.valor,
-                'status': boleto.status,
-                'fornecedor': boleto.fornecedor.nome if boleto.fornecedor else '-'
-            })
-        
-        # Adicionar notas fiscais
-        for nota in notas:
-            documentos.append({
-                'tipo': 'Nota Fiscal',
-                'id': nota.id,
-                'descricao': nota.descricao,
-                'codigo': nota.codigo,
-                'data': nota.recebimento,
-                'valor': nota.valor,
-                'status': 'Pago' if nota.pago else 'Não Pago',
-                'fornecedor': nota.fornecedor.nome if nota.fornecedor else '-'
-            })
-        
-        # Ordenar por data descrescente e pegar apenas os últimos 'limite'
-        documentos.sort(key=lambda x: x['data'], reverse=True)
-        return documentos[:limite]
+    def listar_boletos(self, usuario_id: int):
+        return self.finance_repository.listar_boletos_por_usuario(usuario_id)
 
-    def listar_boletos(self):
-        return self.finance_repository.listar_boletos()
+    def listar_notas_fiscais(self, usuario_id: int):
+        return self.finance_repository.listar_notas_fiscais_por_usuario(usuario_id)
 
-    def listar_notas_fiscais(self):
-        return self.finance_repository.listar_notas_fiscais()
+    def obter_nota_por_id(self, nota_id: int, usuario_id: int):
+        nota = self.finance_repository.buscar_nota_por_id(nota_id)
+        # Verificar se a nota pertence ao usuário
+        if nota and nota.usuario_id == usuario_id:
+            return nota
+        return None
 
-    def obter_nota_por_id(self, nota_id: int):
-        return self.finance_repository.buscar_nota_por_id(nota_id)
-
-    def atualizar_status_nota(self, nota_id: int, pago: bool):
-        return self.finance_repository.atualizar_status_nota(nota_id, pago)
+    def atualizar_status_nota(self, nota_id: int, pago: bool, usuario_id: int):
+        nota = self.obter_nota_por_id(nota_id, usuario_id)
+        if nota:
+            return self.finance_repository.atualizar_status_nota(nota_id, pago)
+        return None
 
     def listar_fornecedores(self):
         return self.fornecedor_repository.listar_fornecedores()
 
-    def obter_boleto_por_id(self, boleto_id: int):
-        return self.finance_repository.buscar_boleto_por_id(boleto_id)
-
-    def atualizar_status_boleto(self, boleto_id: int, status: str):
-        return self.finance_repository.atualizar_status_boleto(boleto_id, status)
-
-    def criar_boleto(self, status, codigo, vencimento, valor, tipo, descricao, fornecedor_id=None):
+    def criar_boleto(self, status, codigo, vencimento, valor, tipo, descricao, usuario_id, fornecedor_id=None):
         try:
             boleto = Boleto(
                 status=status,
@@ -102,6 +56,7 @@ class FinanceService:
                 valor=valor,
                 tipo=tipo,
                 descricao=descricao,
+                usuario_id=usuario_id,
                 fornecedor_id=fornecedor_id
             )
             self.finance_repository.salvar_boleto(boleto)
@@ -110,7 +65,7 @@ class FinanceService:
             print(f"Erro ao criar boleto: {e}")
             raise e
 
-    def criar_nota_fiscal(self, codigo, recebimento, valor, tipo, descricao, fornecedor_id=None, pago=False):
+    def criar_nota_fiscal(self, codigo, recebimento, valor, tipo, descricao, usuario_id, fornecedor_id=None, pago=False):
         try:
             nota = NotaFiscal(
                 codigo=codigo,
@@ -118,6 +73,7 @@ class FinanceService:
                 valor=valor,
                 tipo=tipo,
                 descricao=descricao,
+                usuario_id=usuario_id,
                 fornecedor_id=fornecedor_id,
                 pago=pago
             )

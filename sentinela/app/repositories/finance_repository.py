@@ -24,10 +24,20 @@ class FinanceRepository:
             raise e
 
     def listar_boletos(self):
+        """Lista todos os boletos (para uso administrativo)"""
         return Boleto.query.all()
 
+    def listar_boletos_por_usuario(self, usuario_id: int):
+        """Lista boletos de um usuário específico"""
+        return Boleto.query.filter_by(usuario_id=usuario_id).all()
+
     def listar_notas_fiscais(self):
+        """Lista todas as notas fiscais (para uso administrativo)"""
         return NotaFiscal.query.all()
+
+    def listar_notas_fiscais_por_usuario(self, usuario_id: int):
+        """Lista notas fiscais de um usuário específico"""
+        return NotaFiscal.query.filter_by(usuario_id=usuario_id).all()
 
     def buscar_nota_por_id(self, nota_id: int):
         return NotaFiscal.query.get(nota_id)
@@ -44,21 +54,4 @@ class FinanceRepository:
         except Exception as e:
             db.session.rollback()
             print(f"Erro ao atualizar status da nota: {e}")
-            raise e
-
-    def buscar_boleto_por_id(self, boleto_id: int):
-        return Boleto.query.get(boleto_id)
-
-    def atualizar_status_boleto(self, boleto_id: int, status: str):
-        try:
-            boleto = Boleto.query.get(boleto_id)
-            if not boleto:
-                return None
-            boleto.status = status
-            db.session.add(boleto)
-            db.session.commit()
-            return boleto
-        except Exception as e:
-            db.session.rollback()
-            print(f"Erro ao atualizar status do boleto: {e}")
             raise e

@@ -13,16 +13,20 @@ class NotaFiscal(db.Model):
     # Indica se a nota fiscal já foi paga
     pago = db.Column(db.Boolean, default=False, nullable=False)
 
+    # Chave estrangeira para Usuario
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+
     # Chave estrangeira para Fornecedor
     fornecedor_id = db.Column(db.Integer, db.ForeignKey('fornecedores.id'))
     fornecedor = db.relationship('Fornecedor', backref='notas_fiscais')
 
-    def __init__(self, codigo, recebimento, valor, tipo, descricao, fornecedor_id=None, pago=False):
+    def __init__(self, codigo, recebimento, valor, tipo, descricao, usuario_id, fornecedor_id=None, pago=False):
         self.codigo = codigo
         self.recebimento = recebimento
         self.valor = valor
         self.tipo = tipo
         self.descricao = descricao
+        self.usuario_id = usuario_id
         self.fornecedor_id = fornecedor_id
         self.pago = pago
 
