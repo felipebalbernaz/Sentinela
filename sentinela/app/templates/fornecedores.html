@@ -8,7 +8,7 @@
         <div style="display: flex; gap: 1rem;">
             <input type="text" class="form-control" placeholder="Buscar fornecedores..." style="width: 300px;">
         </div>
-        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Novo Fornecedor</button>
+        <a href="{{ url_for('finance.adicionar_fornecedor') }}" class="btn btn-primary" target="_blank"><i class="fa-solid fa-plus"></i> Novo Fornecedor</a>
     </div>
 </div>
 

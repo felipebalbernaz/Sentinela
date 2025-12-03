@@ -20,3 +20,13 @@ class FornecedorRepository:
 
     def buscar_por_id(self, id: int):
         return Fornecedor.query.get(id)
+
+    def criar_fornecedor(self, nome, cnpj, endereco, contato):
+        novo_fornecedor = Fornecedor(
+            nome=nome,
+            cnpj=cnpj,
+            endereco=endereco,
+            contato=contato
+        )
+        self.salvar(novo_fornecedor)
+        return novo_fornecedor

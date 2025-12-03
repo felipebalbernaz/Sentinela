@@ -100,6 +100,39 @@ def detalhes_fornecedor(fornecedor_id):
         return redirect(url_for('finance.fornecedores'))
     return render_template('detalhes_fornecedor.html', fornecedor=fornecedor, usuario=dados_usuario)
 
+@finance_bp.route('/adicionar-fornecedor', methods=['GET', 'POST'])
+@requer_autenticacao
+def adicionar_fornecedor():
+    dados_usuario = obter_dados_usuario()
+    
+    if request.method == 'POST':
+        try:
+            nome = request.form.get('nome', '').strip()
+            cnpj = request.form.get('cnpj', '').strip()
+            endereco = request.form.get('endereco', '').strip()
+            contato = request.form.get('contato', '').strip()
+            
+            erros = []
+            if not nome:
+                erros.append("Nome do fornecedor é obrigatório")
+            if not cnpj:
+                erros.append("CNPJ é obrigatório")
+            
+            if erros:
+                return render_template('adicionar_fornecedor.html', usuario=dados_usuario, erro=" | ".join(erros))
+            
+            fornecedor_repository.criar_fornecedor(
+                nome=nome,
+                cnpj=cnpj,
+                endereco=endereco,
+                contato=contato
+            )
+            return redirect(url_for('finance.fornecedores'))
+        except Exception as e:
+            return render_template('adicionar_fornecedor.html', usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
+    
+    return render_template('adicionar_fornecedor.html', usuario=dados_usuario)
+
 @finance_bp.route('/adicionar-boleto', methods=['GET', 'POST'])
 @requer_autenticacao
 def adicionar_boleto():
