@@ -10,77 +10,72 @@
             <h3 class="card-title">A Vencer</h3>
             <i class="fa-solid fa-clock" style="color: var(--warning-color)"></i>
         </div>
-        <div style="font-size: 2rem; font-weight: 700;">R$ 1.250,00</div>
-        <div style="color: var(--text-light); font-size: 0.875rem;">3 boletos próximos</div>
+        <div style="font-size: 2rem; font-weight: 700;">R$ {{ "%.2f"|format(resumo.a_vencer.valor) }}</div>
+        <div style="color: var(--text-light); font-size: 0.875rem;">Quantidade: {{ resumo.a_vencer.quantidade }}</div>
     </div>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Vencidos</h3>
             <i class="fa-solid fa-circle-exclamation" style="color: var(--danger-color)"></i>
         </div>
-        <div style="font-size: 2rem; font-weight: 700;">R$ 0,00</div>
-        <div style="color: var(--text-light); font-size: 0.875rem;">Nenhuma pendência</div>
+        <div style="font-size: 2rem; font-weight: 700;">R$ {{ "%.2f"|format(resumo.vencidos.valor) }}</div>
+        <div style="color: var(--text-light); font-size: 0.875rem;">Quantidade: {{ resumo.vencidos.quantidade }}</div>
     </div>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Pagos (Mês)</h3>
+            <h3 class="card-title">Pagos</h3>
             <i class="fa-solid fa-check-circle" style="color: var(--success-color)"></i>
         </div>
-        <div style="font-size: 2rem; font-weight: 700;">R$ 4.500,00</div>
-        <div style="color: var(--text-light); font-size: 0.875rem;">5 documentos pagos</div>
+        <div style="font-size: 2rem; font-weight: 700;">R$ {{ "%.2f"|format(resumo.pagos.valor) }}</div>
+        <div style="color: var(--text-light); font-size: 0.875rem;">Quantidade: {{ resumo.pagos.quantidade }}</div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Últimos Documentos</h3>
-        <button class="btn btn-outline">Ver Todos</button>
+        <a href="{{ url_for('finance.boletos') }}" class="btn btn-outline">Ver Todos</a>
     </div>
     <div class="table-container">
         <table class="table">
             <thead>
                 <tr>
                     <th>Documento</th>
-                    <th>Vencimento</th>
+                    <th>Data</th>
                     <th>Valor</th>
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <div style="font-weight: 500;">Aluguel Escritório</div>
-                        <div style="font-size: 0.75rem; color: var(--text-light);">Boleto #8392</div>
-                    </td>
-                    <td>10/12/2023</td>
-                    <td>R$ 1.200,00</td>
-                    <td><span class="status-badge status-pending">A Vencer</span></td>
-                    <td><button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-eye"></i></button></td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="font-weight: 500;">Serviço de Internet</div>
-                        <div style="font-size: 0.75rem; color: var(--text-light);">Nota Fiscal #0023</div>
-                    </td>
-                    <td>05/12/2023</td>
-                    <td>R$ 150,00</td>
-                    <td><span class="status-badge status-paid">Pago</span></td>
-                    <td><button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-eye"></i></button></td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="font-weight: 500;">Fornecedor XYZ</div>
-                        <div style="font-size: 0.75rem; color: var(--text-light);">Boleto #1122</div>
-                    </td>
-                    <td>01/12/2023</td>
-                    <td>R$ 3.150,00</td>
-                    <td><span class="status-badge status-paid">Pago</span></td>
-                    <td><button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                class="fa-solid fa-eye"></i></button></td>
-                </tr>
+                {% if ultimos_documentos %}
+                    {% for doc in ultimos_documentos %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500;">{{ doc.descricao or 'Sem descrição' }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-light);">{{ doc.tipo }} #{{ doc.codigo }}</div>
+                        </td>
+                        <td>{{ doc.data.strftime('%d/%m/%Y') }}</td>
+                        <td>R$ {{ "%.2f"|format(doc.valor) }}</td>
+                        <td>
+                            {% if doc.status == 'Pago' %}
+                                <span class="status-badge" style="background-color: #28a745; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ doc.status }}</span>
+                            {% elif doc.status == 'A vencer' %}
+                                <span class="status-badge" style="background-color: #ffc107; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ doc.status }}</span>
+                            {% else %}
+                                <span class="status-badge" style="background-color: #dc3545; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ doc.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td><button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-eye"></i></button></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            <p style="color: var(--text-light);">Nenhum documento cadastrado.</p>
+                        </td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from app.services.auth_service import AuthService
 
 main_bp = Blueprint('main', __name__)
@@ -10,11 +9,11 @@ def index():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('password')
-        success, usuario, message = auth_service.login(email, senha)
-        if success and usuario:
-            # Usa Flask-Login para fazer login
-            login_user(usuario, remember=True)
-            flash(message, 'success')
+        success, message = auth_service.login(email, senha)
+        if success:
+            # Armazena o usuário na sessão
+            session['usuario_email'] = email
+            session['autenticado'] = True
             return redirect(url_for('finance.dashboard'))
         else:
             # Retorna a página de login com mensagem de erro

@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.services.auth_service import AuthService
 
 # criando blueprints de registro e login
@@ -11,13 +10,14 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('password')
-        success, usuario, message = auth_service.login(email, senha)
-        if success and usuario:
-            # Usa Flask-Login para fazer login
-            login_user(usuario, remember=True)
-            flash(message, 'success')
+        success, message = auth_service.login(email, senha)
+        if success:
+            # Armazena o usuário na sessão
+            session['usuario_email'] = email
+            session['autenticado'] = True
             return redirect(url_for('finance.dashboard'))
         else:
+            # flash(message) # Flash messages require secret key setup in template
             return render_template('index.html', error_message=message)
     return render_template('index.html')
 
@@ -33,20 +33,15 @@ def register():
         cpf = request.form.get('cpf')
         
         # Tentar registrar o usuário
-        success, resultado = auth_service.registrar_usuario(nome, email, senha, telefone, endereco, cpf)
+        success, message = auth_service.registrar_usuario(nome, email, senha, telefone, endereco, cpf)
         if success:
-            # Login automático após registro
-            login_user(resultado, remember=True)
-            flash('Usuário registrado com sucesso!', 'success')
-            return redirect(url_for('finance.dashboard'))
+            return redirect(url_for('main.index'))
         else:
-            return render_template('register.html', error_message=resultado)
+            return render_template('register.html', error_message=message)
             
     return render_template('register.html')
 
 @auth_bp.route('/logout')
-@login_required
 def logout():
-    logout_user()
-    flash('Você foi deslogado com sucesso.', 'info')
+    session.clear()
     return redirect(url_for('main.index'))

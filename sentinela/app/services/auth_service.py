@@ -22,24 +22,23 @@ class AuthService:
         if len(senha) < 4:
             return False, "Senha deve ter no mínimo 4 caracteres."
         
-        # Criar usuário (a senha será hasheada automaticamente no __init__)
         novo_usuario = Usuario(nome, email, senha, telefone, endereco, cpf)
         self.usuario_repository.salvar(novo_usuario)
-        return True, novo_usuario  # Retorna o objeto usuário para login automático
+        return True, "Usuário registrado com sucesso."
 
     def login(self, email, senha):
         # Validar se email e senha não estão vazios
         if not email or not senha:
-            return False, None, "Email e senha são obrigatórios."
+            return False, "Email e senha são obrigatórios."
         
         usuario = self.usuario_repository.buscar_por_email(email)
         
         # Verificar se usuário existe
         if not usuario:
-            return False, None, "Usuário não encontrado."
+            return False, "Usuário não encontrado."
         
-        # Verificar se senha está correta usando check_senha (compara hash)
-        if not usuario.check_senha(senha):
-            return False, None, "Senha incorreta."
+        # Verificar se senha está correta
+        if usuario.senha != senha:
+            return False, "Senha incorreta."
         
-        return True, usuario, "Login realizado com sucesso."
+        return True, "Login realizado com sucesso."

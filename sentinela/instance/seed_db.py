@@ -72,38 +72,32 @@ with app.app_context():
     
     if boletos_existentes == 0:
         print("Criando boletos de teste...")
-        # Buscar usuário e fornecedores criados
-        usuario_teste = Usuario.query.filter_by(email='teste@email.com').first()
-        if not usuario_teste:
-            print("⚠ Erro: Usuário de teste não encontrado. Crie o usuário primeiro.")
-        else:
-            forn1 = Fornecedor.query.filter_by(cnpj='12345678901234').first()
-            forn2 = Fornecedor.query.filter_by(cnpj='98765432109876').first()
-            
-            boleto1 = Boleto(
-                status='A vencer',
-                codigo='12345.67890 12345.678901 12345.678901 1 12345678901234',
-                vencimento=datetime.now().date() + timedelta(days=10),
-                valor=1500.00,
-                tipo='Pagamento',
-                descricao='Pagamento de materiais',
-                usuario_id=usuario_teste.id,
-                fornecedor_id=forn1.id if forn1 else None
-            )
-            boleto2 = Boleto(
-                status='Vencido',
-                codigo='98765.43210 98765.432101 98765.432101 1 98765432101234',
-                vencimento=datetime.now().date() - timedelta(days=5),
-                valor=2500.00,
-                tipo='Pagamento',
-                descricao='Pagamento de serviços',
-                usuario_id=usuario_teste.id,
-                fornecedor_id=forn2.id if forn2 else None
-            )
-            db.session.add(boleto1)
-            db.session.add(boleto2)
-            db.session.commit()
-            print(f"✓ {2} boletos criados")
+        # Buscar fornecedores criados
+        forn1 = Fornecedor.query.filter_by(cnpj='12345678901234').first()
+        forn2 = Fornecedor.query.filter_by(cnpj='98765432109876').first()
+        
+        boleto1 = Boleto(
+            status='A vencer',
+            codigo='12345.67890 12345.678901 12345.678901 1 12345678901234',
+            vencimento=datetime.now().date() + timedelta(days=10),
+            valor=1500.00,
+            tipo='Pagamento',
+            descricao='Pagamento de materiais',
+            fornecedor_id=forn1.id if forn1 else None
+        )
+        boleto2 = Boleto(
+            status='Vencido',
+            codigo='98765.43210 98765.432101 98765.432101 1 98765432101234',
+            vencimento=datetime.now().date() - timedelta(days=5),
+            valor=2500.00,
+            tipo='Pagamento',
+            descricao='Pagamento de serviços',
+            fornecedor_id=forn2.id if forn2 else None
+        )
+        db.session.add(boleto1)
+        db.session.add(boleto2)
+        db.session.commit()
+        print(f"✓ {2} boletos criados")
     else:
         print(f"✓ Boletos já existem ({boletos_existentes})")
 
@@ -112,38 +106,32 @@ with app.app_context():
     
     if notas_existentes == 0:
         print("Criando notas fiscais de teste...")
-        # Buscar usuário e fornecedores criados
-        usuario_teste = Usuario.query.filter_by(email='teste@email.com').first()
-        if not usuario_teste:
-            print("⚠ Erro: Usuário de teste não encontrado. Crie o usuário primeiro.")
-        else:
-            forn1 = Fornecedor.query.filter_by(cnpj='12345678901234').first()
-            forn3 = Fornecedor.query.filter_by(cnpj='11122233344455').first()
-            
-            nota1 = NotaFiscal(
-                codigo='NF-001',
-                recebimento=datetime.now().date(),
-                valor=5000.00,
-                tipo='Entrada',
-                descricao='Nota fiscal de entrada',
-                usuario_id=usuario_teste.id,
-                pago=False,
-                fornecedor_id=forn1.id if forn1 else None
-            )
-            nota2 = NotaFiscal(
-                codigo='NF-002',
-                recebimento=datetime.now().date() - timedelta(days=2),
-                valor=3000.00,
-                tipo='Entrada',
-                descricao='Nota fiscal de entrada',
-                usuario_id=usuario_teste.id,
-                pago=False,
-                fornecedor_id=forn3.id if forn3 else None
-            )
-            db.session.add(nota1)
-            db.session.add(nota2)
-            db.session.commit()
-            print(f"✓ {2} notas fiscais criadas")
+        # Buscar fornecedores criados
+        forn1 = Fornecedor.query.filter_by(cnpj='12345678901234').first()
+        forn3 = Fornecedor.query.filter_by(cnpj='11122233344455').first()
+        
+        nota1 = NotaFiscal(
+            codigo='NF-001',
+            recebimento=datetime.now().date(),
+            valor=5000.00,
+            tipo='Entrada',
+            descricao='Nota fiscal de entrada',
+            pago=False,
+            fornecedor_id=forn1.id if forn1 else None
+        )
+        nota2 = NotaFiscal(
+            codigo='NF-002',
+            recebimento=datetime.now().date() - timedelta(days=2),
+            valor=3000.00,
+            tipo='Entrada',
+            descricao='Nota fiscal de entrada',
+            pago=False,
+            fornecedor_id=forn3.id if forn3 else None
+        )
+        db.session.add(nota1)
+        db.session.add(nota2)
+        db.session.commit()
+        print(f"✓ {2} notas fiscais criadas")
     else:
         print(f"✓ Notas fiscais já existem ({notas_existentes})")
 
