@@ -37,8 +37,9 @@ def obter_dados_usuario():
 @requer_autenticacao
 def dashboard():
     resumo = finance_service.obter_resumo_dashboard()
+    ultimos_documentos = finance_service.obter_ultimos_documentos(3)
     dados_usuario = obter_dados_usuario()
-    return render_template('dashboard.html', resumo=resumo, usuario=dados_usuario)
+    return render_template('dashboard.html', resumo=resumo, ultimos_documentos=ultimos_documentos, usuario=dados_usuario)
 
 @finance_bp.route('/boletos')
 @requer_autenticacao

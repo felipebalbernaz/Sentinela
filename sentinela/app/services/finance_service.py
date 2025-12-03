@@ -12,12 +12,65 @@ class FinanceService:
     def obter_resumo_dashboard(self):
         # Lógica de negócio para calcular totais
         boletos = self.finance_repository.listar_boletos()
-        # ... lógica para somar valores ...
+        
+        # Calcular somas e contagens por status
+        a_vencer = {'valor': 0.0, 'quantidade': 0}
+        vencidos = {'valor': 0.0, 'quantidade': 0}
+        pagos = {'valor': 0.0, 'quantidade': 0}
+        
+        for boleto in boletos:
+            if boleto.status == 'A vencer':
+                a_vencer['valor'] += boleto.valor
+                a_vencer['quantidade'] += 1
+            elif boleto.status == 'Vencido':
+                vencidos['valor'] += boleto.valor
+                vencidos['quantidade'] += 1
+            elif boleto.status == 'Pago':
+                pagos['valor'] += boleto.valor
+                pagos['quantidade'] += 1
+        
         return {
-            "a_vencer": 0.0,
-            "vencidos": 0.0,
-            "pagos": 0.0
+            "a_vencer": a_vencer,
+            "vencidos": vencidos,
+            "pagos": pagos
         }
+
+    def obter_ultimos_documentos(self, limite=3):
+        """Retorna os últimos 3 documentos (boletos e notas fiscais) ordenados por data de criação"""
+        boletos = self.finance_repository.listar_boletos()
+        notas = self.finance_repository.listar_notas_fiscais()
+        
+        documentos = []
+        
+        # Adicionar boletos
+        for boleto in boletos:
+            documentos.append({
+                'tipo': 'Boleto',
+                'id': boleto.id,
+                'descricao': boleto.descricao,
+                'codigo': boleto.codigo,
+                'data': boleto.vencimento,
+                'valor': boleto.valor,
+                'status': boleto.status,
+                'fornecedor': boleto.fornecedor.nome if boleto.fornecedor else '-'
+            })
+        
+        # Adicionar notas fiscais
+        for nota in notas:
+            documentos.append({
+                'tipo': 'Nota Fiscal',
+                'id': nota.id,
+                'descricao': nota.descricao,
+                'codigo': nota.codigo,
+                'data': nota.recebimento,
+                'valor': nota.valor,
+                'status': 'Pago' if nota.pago else 'Não Pago',
+                'fornecedor': nota.fornecedor.nome if nota.fornecedor else '-'
+            })
+        
+        # Ordenar por data descrescente e pegar apenas os últimos 'limite'
+        documentos.sort(key=lambda x: x['data'], reverse=True)
+        return documentos[:limite]
 
     def listar_boletos(self):
         return self.finance_repository.listar_boletos()
