@@ -1,5 +1,6 @@
 from app import db
 from app.models.fornecedor import Fornecedor
+from sqlalchemy import or_
 
 class FornecedorRepository:
     def salvar(self, fornecedor: Fornecedor):
@@ -12,8 +13,21 @@ class FornecedorRepository:
             print(f"Erro ao salvar fornecedor: {e}")
             raise e
 
-    def listar_fornecedores(self):
-        return Fornecedor.query.all()
+    def listar_fornecedores(self, search_query=None):
+        query = Fornecedor.query
+
+        if search_query:
+            search_term = f"%{search_query}%"
+            query = query.filter(
+                or_(
+                    Fornecedor.nome.ilike(search_term),
+                    Fornecedor.cnpj.ilike(search_term),
+                    Fornecedor.endereco.ilike(search_term),
+                    Fornecedor.contato.ilike(search_term)
+                )
+            )
+
+        return query.all()
 
     def buscar_por_cnpj(self, cnpj: str):
         return Fornecedor.query.filter_by(cnpj=cnpj).first()

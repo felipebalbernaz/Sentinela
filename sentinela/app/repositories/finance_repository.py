@@ -1,6 +1,8 @@
 from app import db
 from app.models.boleto import Boleto
 from app.models.nota_fiscal import NotaFiscal
+from app.models.fornecedor import Fornecedor
+from sqlalchemy import or_
 
 class FinanceRepository:
     def salvar_boleto(self, boleto: Boleto):
@@ -23,11 +25,44 @@ class FinanceRepository:
             print(f"Erro ao salvar nota fiscal: {e}")
             raise e
 
-    def listar_boletos(self):
-        return Boleto.query.all()
+    def listar_boletos(self, search_query=None, status_filter=None):
+        query = Boleto.query.join(Fornecedor, Fornecedor.id == Boleto.fornecedor_id, isouter=True)
 
-    def listar_notas_fiscais(self):
-        return NotaFiscal.query.all()
+        if status_filter:
+            query = query.filter(Boleto.status == status_filter)
+        
+        if search_query:
+            search_term = f"%{search_query}%"
+            query = query.filter(
+                or_(
+                    Boleto.codigo.ilike(search_term),
+                    Boleto.descricao.ilike(search_term),
+                    Fornecedor.nome.ilike(search_term)
+                )
+            )
+            
+        return query.all()
+
+    def listar_notas_fiscais(self, search_query=None, status_filter=None):
+        query = NotaFiscal.query.join(Fornecedor, Fornecedor.id == NotaFiscal.fornecedor_id, isouter=True)
+
+        if status_filter:
+            if status_filter == 'Pago':
+                query = query.filter(NotaFiscal.pago == True)
+            elif status_filter == 'Não Pago':
+                query = query.filter(NotaFiscal.pago == False)
+
+        if search_query:
+            search_term = f"%{search_query}%"
+            query = query.filter(
+                or_(
+                    NotaFiscal.codigo.ilike(search_term),
+                    NotaFiscal.descricao.ilike(search_term),
+                    Fornecedor.nome.ilike(search_term)
+                )
+            )
+
+        return query.all()
 
     def buscar_nota_por_id(self, nota_id: int):
         return NotaFiscal.query.get(nota_id)

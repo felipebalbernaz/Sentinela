@@ -44,16 +44,20 @@ def dashboard():
 @finance_bp.route('/boletos')
 @requer_autenticacao
 def boletos():
-    lista_boletos = finance_service.listar_boletos()
+    search_query = request.args.get('q', '')
+    status_filter = request.args.get('status', '')
+    lista_boletos = finance_service.listar_boletos(search_query=search_query, status_filter=status_filter)
     dados_usuario = obter_dados_usuario()
-    return render_template('boletos.html', boletos=lista_boletos, usuario=dados_usuario)
+    return render_template('boletos.html', boletos=lista_boletos, usuario=dados_usuario, search_query=search_query, status_filter=status_filter)
 
 @finance_bp.route('/notas-fiscais')
 @requer_autenticacao
 def notas_fiscais():
-    lista_notas = finance_service.listar_notas_fiscais()
+    search_query = request.args.get('q', '')
+    status_filter = request.args.get('status', '')
+    lista_notas = finance_service.listar_notas_fiscais(search_query=search_query, status_filter=status_filter)
     dados_usuario = obter_dados_usuario()
-    return render_template('notas_fiscais.html', notas=lista_notas, usuario=dados_usuario)
+    return render_template('notas_fiscais.html', notas=lista_notas, usuario=dados_usuario, search_query=search_query, status_filter=status_filter)
 
 
 @finance_bp.route('/nota/<int:nota_id>/toggle-pago', methods=['POST'])
@@ -87,9 +91,10 @@ def perfil():
 @finance_bp.route('/fornecedores')
 @requer_autenticacao
 def fornecedores():
-    lista_fornecedores = fornecedor_repository.listar_fornecedores()
+    search_query = request.args.get('q', '')
+    lista_fornecedores = fornecedor_repository.listar_fornecedores(search_query=search_query)
     dados_usuario = obter_dados_usuario()
-    return render_template('fornecedores.html', fornecedores=lista_fornecedores, usuario=dados_usuario)
+    return render_template('fornecedores.html', fornecedores=lista_fornecedores, usuario=dados_usuario, search_query=search_query)
 
 @finance_bp.route('/fornecedor/<int:fornecedor_id>')
 @requer_autenticacao

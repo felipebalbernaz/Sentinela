@@ -5,15 +5,16 @@
 {% block content %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <div style="display: flex; gap: 1rem;">
-            <input type="text" class="form-control" placeholder="Buscar boletos..." style="width: 300px;">
-            <select class="form-control" style="width: 150px;">
+        <form method="GET" action="{{ url_for('finance.boletos') }}" style="display: flex; gap: 1rem;">
+            <input type="text" name="q" class="form-control" placeholder="Buscar boletos..." style="width: 300px;" value="{{ search_query }}">
+            <select name="status" class="form-control" style="width: 150px;">
                 <option value="">Todos Status</option>
-                <option value="pending">A Vencer</option>
-                <option value="paid">Pagos</option>
-                <option value="overdue">Vencidos</option>
+                <option value="A vencer" {% if status_filter == 'A vencer' %}selected{% endif %}>A Vencer</option>
+                <option value="Pago" {% if status_filter == 'Pago' %}selected{% endif %}>Pagos</option>
+                <option value="Vencido" {% if status_filter == 'Vencido' %}selected{% endif %}>Vencidos</option>
             </select>
-        </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
+        </form>
         <a href="{{ url_for('finance.adicionar_boleto') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Novo Boleto</a>
     </div>
 </div>

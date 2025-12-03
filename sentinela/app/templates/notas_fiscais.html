@@ -5,10 +5,15 @@
 {% block content %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <div style="display: flex; gap: 1rem;">
-            <input type="text" class="form-control" placeholder="Buscar notas..." style="width: 300px;">
-            <input type="date" class="form-control" style="width: 150px;">
-        </div>
+        <form method="GET" action="{{ url_for('finance.notas_fiscais') }}" style="display: flex; gap: 1rem;">
+            <input type="text" name="q" class="form-control" placeholder="Buscar notas..." style="width: 300px;" value="{{ search_query }}">
+            <select name="status" class="form-control" style="width: 150px;">
+                <option value="">Todos Status</option>
+                <option value="Pago" {% if status_filter == 'Pago' %}selected{% endif %}>Pago</option>
+                <option value="Não Pago" {% if status_filter == 'Não Pago' %}selected{% endif %}>Não Pago</option>
+            </select>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
+        </form>
         <a href="{{ url_for('finance.adicionar_nota_fiscal') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nova Nota</a>
     </div>
 </div>

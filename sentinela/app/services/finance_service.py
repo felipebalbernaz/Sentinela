@@ -72,11 +72,11 @@ class FinanceService:
         documentos.sort(key=lambda x: x['data'], reverse=True)
         return documentos[:limite]
 
-    def listar_boletos(self):
-        return self.finance_repository.listar_boletos()
+    def listar_boletos(self, search_query=None, status_filter=None):
+        return self.finance_repository.listar_boletos(search_query, status_filter)
 
-    def listar_notas_fiscais(self):
-        return self.finance_repository.listar_notas_fiscais()
+    def listar_notas_fiscais(self, search_query=None, status_filter=None):
+        return self.finance_repository.listar_notas_fiscais(search_query, status_filter)
 
     def obter_nota_por_id(self, nota_id: int):
         return self.finance_repository.buscar_nota_por_id(nota_id)
