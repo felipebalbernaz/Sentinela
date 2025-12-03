@@ -33,11 +33,10 @@
                         <td>{{ fornecedor.endereco if fornecedor.endereco else '-' }}</td>
                         <td>{{ fornecedor.contato if fornecedor.contato else '-' }}</td>
                         <td>
-                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                    class="fa-solid fa-pen"></i></button>
-                            <button class="btn btn-outline"
-                                style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i
-                                    class="fa-solid fa-trash"></i></button>
+                            <a href="{{ url_for('finance.editar_fornecedor', fornecedor_id=fornecedor.id) }}" class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-pen"></i></a>
+                            <form action="{{ url_for('finance.deletar_fornecedor', fornecedor_id=fornecedor.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar este fornecedor?');">
+                                <button type="submit" class="btn btn-outline" style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i class="fa-solid fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}

@@ -133,6 +133,57 @@ def adicionar_fornecedor():
     
     return render_template('adicionar_fornecedor.html', usuario=dados_usuario)
 
+@finance_bp.route('/fornecedor/<int:fornecedor_id>/deletar', methods=['POST'])
+@requer_autenticacao
+def deletar_fornecedor(fornecedor_id):
+    try:
+        fornecedor_repository.deletar(fornecedor_id)
+        flash('Fornecedor deletado com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao deletar fornecedor: {str(e)}', 'danger')
+    return redirect(url_for('finance.fornecedores'))
+
+@finance_bp.route('/fornecedor/<int:fornecedor_id>/editar', methods=['GET', 'POST'])
+@requer_autenticacao
+def editar_fornecedor(fornecedor_id):
+    fornecedor = fornecedor_repository.buscar_por_id(fornecedor_id)
+    if not fornecedor:
+        return redirect(url_for('finance.fornecedores'))
+
+    dados_usuario = obter_dados_usuario()
+
+    if request.method == 'POST':
+        try:
+            nome = request.form.get('nome', '').strip()
+            cnpj = request.form.get('cnpj', '').strip()
+            endereco = request.form.get('endereco', '').strip()
+            contato = request.form.get('contato', '').strip()
+
+            erros = []
+            if not nome:
+                erros.append("Nome do fornecedor é obrigatório")
+            if not cnpj:
+                erros.append("CNPJ é obrigatório")
+
+            if erros:
+                return render_template('editar_fornecedor.html', fornecedor=fornecedor, usuario=dados_usuario, erro=" | ".join(erros))
+
+            fornecedor_repository.atualizar_fornecedor(
+                fornecedor_id=fornecedor_id,
+                nome=nome,
+                cnpj=cnpj,
+                endereco=endereco,
+                contato=contato
+            )
+            flash('Fornecedor atualizado com sucesso!', 'success')
+            return redirect(url_for('finance.fornecedores'))
+        except Exception as e:
+            return render_template('editar_fornecedor.html', fornecedor=fornecedor, usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
+
+    return render_template('editar_fornecedor.html', fornecedor=fornecedor, usuario=dados_usuario)
+
+
+
 @finance_bp.route('/adicionar-boleto', methods=['GET', 'POST'])
 @requer_autenticacao
 def adicionar_boleto():
@@ -196,6 +247,70 @@ def adicionar_boleto():
     
     return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario)
 
+@finance_bp.route('/boleto/<int:boleto_id>/deletar', methods=['POST'])
+@requer_autenticacao
+def deletar_boleto(boleto_id):
+    try:
+        finance_service.deletar_boleto(boleto_id)
+        flash('Boleto deletado com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao deletar boleto: {str(e)}', 'danger')
+    return redirect(url_for('finance.boletos'))
+
+
+@finance_bp.route('/boleto/<int:boleto_id>/editar', methods=['GET', 'POST'])
+@requer_autenticacao
+def editar_boleto(boleto_id):
+    boleto = finance_service.obter_boleto_por_id(boleto_id)
+    if not boleto:
+        return redirect(url_for('finance.boletos'))
+
+    dados_usuario = obter_dados_usuario()
+    fornecedores = finance_service.listar_fornecedores()
+
+    if request.method == 'POST':
+        try:
+            codigo = request.form.get('codigo', '').strip()
+            vencimento_str = request.form.get('vencimento', '').strip()
+            valor_str = request.form.get('valor', '').strip()
+            tipo = request.form.get('tipo', '').strip()
+            descricao = request.form.get('descricao', '').strip()
+            status = request.form.get('status', '').strip()
+            fornecedor_id_str = request.form.get('fornecedor_id', '').strip()
+
+            erros = []
+            if not codigo:
+                erros.append("Número do boleto é obrigatório")
+            if not vencimento_str:
+                erros.append("Data de vencimento é obrigatória")
+            if not valor_str:
+                erros.append("Valor é obrigatório")
+
+            if erros:
+                return render_template('editar_boleto.html', boleto=boleto, fornecedores=fornecedores, usuario=dados_usuario, erro=" | ".join(erros))
+
+            valor = float(valor_str)
+            vencimento = datetime.strptime(vencimento_str, '%Y-%m-%d').date()
+            fornecedor_id = int(fornecedor_id_str) if fornecedor_id_str else None
+
+            finance_service.atualizar_boleto(
+                boleto_id=boleto_id,
+                codigo=codigo,
+                vencimento=vencimento,
+                valor=valor,
+                tipo=tipo,
+                descricao=descricao,
+                fornecedor_id=fornecedor_id,
+                status=status
+            )
+            flash('Boleto atualizado com sucesso!', 'success')
+            return redirect(url_for('finance.boletos'))
+        except Exception as e:
+            return render_template('editar_boleto.html', boleto=boleto, fornecedores=fornecedores, usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
+
+    return render_template('editar_boleto.html', boleto=boleto, fornecedores=fornecedores, usuario=dados_usuario)
+
+
 @finance_bp.route('/adicionar-nota-fiscal', methods=['GET', 'POST'])
 @requer_autenticacao
 def adicionar_nota_fiscal():
@@ -258,3 +373,66 @@ def adicionar_nota_fiscal():
             return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
     
     return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario)
+
+@finance_bp.route('/nota_fiscal/<int:nota_id>/deletar', methods=['POST'])
+@requer_autenticacao
+def deletar_nota_fiscal(nota_id):
+    try:
+        finance_service.deletar_nota_fiscal(nota_id)
+        flash('Nota fiscal deletada com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao deletar nota fiscal: {str(e)}', 'danger')
+    return redirect(url_for('finance.notas_fiscais'))
+
+@finance_bp.route('/nota_fiscal/<int:nota_id>/editar', methods=['GET', 'POST'])
+@requer_autenticacao
+def editar_nota_fiscal(nota_id):
+    nota = finance_service.obter_nota_por_id(nota_id)
+    if not nota:
+        return redirect(url_for('finance.notas_fiscais'))
+
+    dados_usuario = obter_dados_usuario()
+    fornecedores = finance_service.listar_fornecedores()
+
+    if request.method == 'POST':
+        try:
+            codigo = request.form.get('codigo', '').strip()
+            recebimento_str = request.form.get('recebimento', '').strip()
+            valor_str = request.form.get('valor', '').strip()
+            tipo = request.form.get('tipo', '').strip()
+            descricao = request.form.get('descricao', '').strip()
+            pago = request.form.get('pago') == 'on'
+            fornecedor_id_str = request.form.get('fornecedor_id', '').strip()
+
+            erros = []
+            if not codigo:
+                erros.append("Número da nota é obrigatório")
+            if not recebimento_str:
+                erros.append("Data de recebimento é obrigatória")
+            if not valor_str:
+                erros.append("Valor é obrigatório")
+
+            if erros:
+                return render_template('editar_nota_fiscal.html', nota=nota, fornecedores=fornecedores, usuario=dados_usuario, erro=" | ".join(erros))
+
+            valor = float(valor_str)
+            recebimento = datetime.strptime(recebimento_str, '%Y-%m-%d').date()
+            fornecedor_id = int(fornecedor_id_str) if fornecedor_id_str else None
+
+            finance_service.atualizar_nota_fiscal(
+                nota_id=nota_id,
+                codigo=codigo,
+                recebimento=recebimento,
+                valor=valor,
+                tipo=tipo,
+                descricao=descricao,
+                fornecedor_id=fornecedor_id,
+                pago=pago
+            )
+            flash('Nota fiscal atualizada com sucesso!', 'success')
+            return redirect(url_for('finance.notas_fiscais'))
+        except Exception as e:
+            return render_template('editar_nota_fiscal.html', nota=nota, fornecedores=fornecedores, usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
+
+    return render_template('editar_nota_fiscal.html', nota=nota, fornecedores=fornecedores, usuario=dados_usuario)
+

@@ -62,3 +62,75 @@ class FinanceRepository:
             db.session.rollback()
             print(f"Erro ao atualizar status do boleto: {e}")
             raise e
+
+    def deletar_nota_fiscal(self, nota_id: int):
+        try:
+            nota = self.buscar_nota_por_id(nota_id)
+            if nota:
+                db.session.delete(nota)
+                db.session.commit()
+                print(f"Nota fiscal com ID {nota_id} deletada.")
+            else:
+                print(f"Nota fiscal com ID {nota_id} não encontrada.")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao deletar nota fiscal: {e}")
+            raise e
+
+    def atualizar_nota_fiscal(self, nota_id, codigo, recebimento, valor, tipo, descricao, fornecedor_id, pago):
+        try:
+            nota = self.buscar_nota_por_id(nota_id)
+            if nota:
+                nota.codigo = codigo
+                nota.recebimento = recebimento
+                nota.valor = valor
+                nota.tipo = tipo
+                nota.descricao = descricao
+                nota.fornecedor_id = fornecedor_id
+                nota.pago = pago
+                db.session.commit()
+                print(f"Nota fiscal com ID {nota_id} atualizada.")
+                return nota
+            else:
+                print(f"Nota fiscal com ID {nota_id} não encontrada.")
+                return None
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao atualizar nota fiscal: {e}")
+            raise e
+
+    def atualizar_boleto(self, boleto_id, codigo, vencimento, valor, tipo, descricao, fornecedor_id, status):
+        try:
+            boleto = self.buscar_boleto_por_id(boleto_id)
+            if boleto:
+                boleto.codigo = codigo
+                boleto.vencimento = vencimento
+                boleto.valor = valor
+                boleto.tipo = tipo
+                boleto.descricao = descricao
+                boleto.fornecedor_id = fornecedor_id
+                boleto.status = status
+                db.session.commit()
+                print(f"Boleto com ID {boleto_id} atualizado.")
+                return boleto
+            else:
+                print(f"Boleto com ID {boleto_id} não encontrado.")
+                return None
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao atualizar boleto: {e}")
+            raise e
+
+    def deletar_boleto(self, boleto_id: int):
+        try:
+            boleto = self.buscar_boleto_por_id(boleto_id)
+            if boleto:
+                db.session.delete(boleto)
+                db.session.commit()
+                print(f"Boleto com ID {boleto_id} deletado.")
+            else:
+                print(f"Boleto com ID {boleto_id} não encontrado.")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao deletar boleto: {e}")
+            raise e

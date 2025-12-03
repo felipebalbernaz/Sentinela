@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block page_title %}Editar Boleto{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header">
+        <h3 style="margin: 0;">Editar Boleto</h3>
+    </div>
+    
+    <form method="POST" style="padding: 2rem;">
+        {% if erro %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 4px solid #dc3545;">
+            <strong>❌ Erro:</strong> {{ erro }}
+        </div>
+        {% endif %}
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="codigo" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Código de Barras*</label>
+            <input type="text" id="codigo" name="codigo" class="form-control" value="{{ boleto.codigo }}" required>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="vencimento" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Data de Vencimento*</label>
+            <input type="date" id="vencimento" name="vencimento" class="form-control" value="{{ boleto.vencimento.strftime('%Y-%m-%d') }}" required>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="valor" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Valor (R$)*</label>
+            <input type="number" id="valor" name="valor" class="form-control" value="{{ boleto.valor }}" step="0.01" min="0" required>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="tipo" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Tipo</label>
+            <input type="text" id="tipo" name="tipo" class="form-control" value="{{ boleto.tipo }}">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="descricao" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Descrição</label>
+            <textarea id="descricao" name="descricao" class="form-control" rows="4">{{ boleto.descricao }}</textarea>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="status" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status</label>
+            <select id="status" name="status" class="form-control">
+                <option value="A vencer" {% if boleto.status == 'A vencer' %}selected{% endif %}>A vencer</option>
+                <option value="Pago" {% if boleto.status == 'Pago' %}selected{% endif %}>Pago</option>
+                <option value="Vencido" {% if boleto.status == 'Vencido' %}selected{% endif %}>Vencido</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="fornecedor_id" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fornecedor</label>
+            <select id="fornecedor_id" name="fornecedor_id" class="form-control">
+                <option value="">Selecione um fornecedor (opcional)</option>
+                {% for fornecedor in fornecedores %}
+                <option value="{{ fornecedor.id }}" {% if boleto.fornecedor_id == fornecedor.id %}selected{% endif %}>{{ fornecedor.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Salvar Alterações</button>
+            <a href="{{ url_for('finance.boletos') }}" class="btn btn-outline" style="flex: 1; text-align: center; text-decoration: none;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

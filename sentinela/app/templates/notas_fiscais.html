@@ -61,8 +61,10 @@
                                     {% endif %}
                                 </button>
                             </form>
-                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-download"></i></button>
-                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-pen"></i></button>
+                            <a href="{{ url_for('finance.editar_nota_fiscal', nota_id=nota.id) }}" class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-pen"></i></a>
+                            <form action="{{ url_for('finance.deletar_nota_fiscal', nota_id=nota.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar esta nota fiscal?');">
+                                <button type="submit" class="btn btn-outline" style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i class="fa-solid fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}

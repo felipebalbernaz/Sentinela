@@ -126,3 +126,33 @@ class FinanceService:
         except Exception as e:
             print(f"Erro ao criar nota fiscal: {e}")
             raise e
+
+    def deletar_nota_fiscal(self, nota_id: int):
+        return self.finance_repository.deletar_nota_fiscal(nota_id)
+
+    def atualizar_nota_fiscal(self, nota_id, codigo, recebimento, valor, tipo, descricao, fornecedor_id, pago):
+        return self.finance_repository.atualizar_nota_fiscal(
+            nota_id=nota_id,
+            codigo=codigo,
+            recebimento=recebimento,
+            valor=valor,
+            tipo=tipo,
+            descricao=descricao,
+            fornecedor_id=fornecedor_id,
+            pago=pago
+        )
+
+    def atualizar_boleto(self, boleto_id, codigo, vencimento, valor, tipo, descricao, fornecedor_id, status):
+        return self.finance_repository.atualizar_boleto(
+            boleto_id=boleto_id,
+            codigo=codigo,
+            vencimento=vencimento,
+            valor=valor,
+            tipo=tipo,
+            descricao=descricao,
+            fornecedor_id=fornecedor_id,
+            status=status
+        )
+
+    def deletar_boleto(self, boleto_id: int):
+        return self.finance_repository.deletar_boleto(boleto_id)

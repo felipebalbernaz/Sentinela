@@ -27,18 +27,18 @@ class Boleto(db.Model):
 
     def atualizar_status(self):
         # Lógica para atualizar status baseado no vencimento
-        if datetime.combine(self.vencimento, datetime.min.time()) >= datetime.now():
-            self.status = "A vencer"
-        else:
+        if self.vencimento < datetime.now().date():
             self.status = "Vencido"
+        else:
+            self.status = "A vencer"
 
     def calcular_dias_vencimento(self):
-        delta = datetime.now().date() - self.vencimento
+        delta = self.vencimento - datetime.now().date()
         dias = delta.days
-        if dias < 0:
-            return f"{abs(dias)} dia(s) até que o boleto expire."
-        elif dias > 0:
-            return f"{dias} dia(s) desde que o boleto expirou."
+        if dias > 0:
+            return f"{dias} dia(s) até que o boleto expire."
+        elif dias < 0:
+            return f"{abs(dias)} dia(s) desde que o boleto expirou."
         else:
             return "O boleto expira hoje."
 

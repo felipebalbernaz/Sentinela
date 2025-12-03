@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block page_title %}Editar Fornecedor{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header">
+        <h3 style="margin: 0;">Editar Fornecedor</h3>
+    </div>
+    
+    <form method="POST" style="padding: 2rem;">
+        {% if erro %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 4px solid #dc3545;">
+            <strong>❌ Erro:</strong> {{ erro }}
+        </div>
+        {% endif %}
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="nome" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Nome do Fornecedor*</label>
+            <input type="text" id="nome" name="nome" class="form-control" value="{{ fornecedor.nome }}" required>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="cnpj" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">CNPJ*</label>
+            <input type="text" id="cnpj" name="cnpj" class="form-control" value="{{ fornecedor.cnpj }}" required>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="endereco" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Endereço</label>
+            <input type="text" id="endereco" name="endereco" class="form-control" value="{{ fornecedor.endereco }}">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="contato" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Contato</label>
+            <input type="text" id="contato" name="contato" class="form-control" value="{{ fornecedor.contato }}">
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Salvar Alterações</button>
+            <a href="{{ url_for('finance.fornecedores') }}" class="btn btn-outline" style="flex: 1; text-align: center; text-decoration: none;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
