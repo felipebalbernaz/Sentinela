@@ -34,6 +34,12 @@ class FinanceService:
     def listar_fornecedores(self):
         return self.fornecedor_repository.listar_fornecedores()
 
+    def obter_boleto_por_id(self, boleto_id: int):
+        return self.finance_repository.buscar_boleto_por_id(boleto_id)
+
+    def atualizar_status_boleto(self, boleto_id: int, status: str):
+        return self.finance_repository.atualizar_status_boleto(boleto_id, status)
+
     def criar_boleto(self, status, codigo, vencimento, valor, tipo, descricao, fornecedor_id=None):
         try:
             boleto = Boleto(

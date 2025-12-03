@@ -45,3 +45,20 @@ class FinanceRepository:
             db.session.rollback()
             print(f"Erro ao atualizar status da nota: {e}")
             raise e
+
+    def buscar_boleto_por_id(self, boleto_id: int):
+        return Boleto.query.get(boleto_id)
+
+    def atualizar_status_boleto(self, boleto_id: int, status: str):
+        try:
+            boleto = Boleto.query.get(boleto_id)
+            if not boleto:
+                return None
+            boleto.status = status
+            db.session.add(boleto)
+            db.session.commit()
+            return boleto
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao atualizar status do boleto: {e}")
+            raise e

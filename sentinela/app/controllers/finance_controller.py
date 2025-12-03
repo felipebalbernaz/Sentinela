@@ -66,6 +66,17 @@ def toggle_pago_nota(nota_id):
     finance_service.atualizar_status_nota(nota_id, novo_status)
     return redirect(url_for('finance.notas_fiscais'))
 
+@finance_bp.route('/boleto/<int:boleto_id>/atualizar-status', methods=['POST'])
+@requer_autenticacao
+def atualizar_status_boleto(boleto_id):
+    boleto = finance_service.obter_boleto_por_id(boleto_id)
+    if not boleto:
+        return redirect(url_for('finance.boletos'))
+    
+    novo_status = request.form.get('status', boleto.status)
+    finance_service.atualizar_status_boleto(boleto_id, novo_status)
+    return redirect(url_for('finance.boletos'))
+
 @finance_bp.route('/perfil')
 @requer_autenticacao
 def perfil():

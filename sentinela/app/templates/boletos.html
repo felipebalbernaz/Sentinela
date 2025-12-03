@@ -59,11 +59,18 @@
                             {% endif %}
                         </td>
                         <td>
-                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
-                                    class="fa-solid fa-pen"></i></button>
-                            <button class="btn btn-outline"
-                                style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i
-                                    class="fa-solid fa-trash"></i></button>
+                            <form method="post" action="{{ url_for('finance.atualizar_status_boleto', boleto_id=boleto.id) }}" style="display: flex; gap: 0.25rem; align-items: center;">
+                                <select name="status" class="form-control" style="padding: 0.25rem; font-size: 0.875rem; width: 120px;">
+                                    <option value="A vencer" {% if boleto.status == 'A vencer' %}selected{% endif %}>A vencer</option>
+                                    <option value="Pago" {% if boleto.status == 'Pago' %}selected{% endif %}>Pago</option>
+                                    <option value="Vencido" {% if boleto.status == 'Vencido' %}selected{% endif %}>Vencido</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline" style="padding: 0.25rem 0.5rem;" title="Atualizar status">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </form>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; color: var(--danger-color); border-color: var(--danger-color);"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                     {% endfor %}
