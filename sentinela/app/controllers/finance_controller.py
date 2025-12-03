@@ -1,12 +1,23 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from app.services.finance_service import FinanceService
 from app.repositories.fornecedor_repository import FornecedorRepository
+from app.services.ocr_service import OCRService
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
 
 finance_bp = Blueprint('finance', __name__)
 finance_service = FinanceService()
 fornecedor_repository = FornecedorRepository()
+ocr_service = OCRService()
+
+# Configurações de upload
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'uploads')
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def obter_dados_usuario():
     """Busca todos os dados do usuário logado"""
@@ -77,6 +88,48 @@ def detalhes_fornecedor(fornecedor_id):
         flash('Fornecedor não encontrado.', 'error')
         return redirect(url_for('finance.fornecedores'))
     return render_template('detalhes_fornecedor.html', fornecedor=fornecedor, usuario=dados_usuario)
+
+@finance_bp.route('/processar-ocr-boleto', methods=['POST'])
+@login_required
+def processar_ocr_boleto():
+    """Endpoint para processar OCR de boleto via AJAX"""
+    try:
+        if 'imagem' not in request.files:
+            return jsonify({'erro': 'Nenhuma imagem enviada'}), 400
+        
+        file = request.files['imagem']
+        if file.filename == '':
+            return jsonify({'erro': 'Nenhuma imagem selecionada'}), 400
+        
+        if file and allowed_file(file.filename):
+            image_bytes = file.read()
+            dados_extraidos = ocr_service.extract_boleto_data(image_bytes)
+            return jsonify({'sucesso': True, 'dados': dados_extraidos})
+        else:
+            return jsonify({'erro': 'Formato de arquivo não permitido'}), 400
+    except Exception as e:
+        return jsonify({'erro': f'Erro ao processar OCR: {str(e)}'}), 500
+
+@finance_bp.route('/processar-ocr-nota', methods=['POST'])
+@login_required
+def processar_ocr_nota():
+    """Endpoint para processar OCR de nota fiscal via AJAX"""
+    try:
+        if 'imagem' not in request.files:
+            return jsonify({'erro': 'Nenhuma imagem enviada'}), 400
+        
+        file = request.files['imagem']
+        if file.filename == '':
+            return jsonify({'erro': 'Nenhuma imagem selecionada'}), 400
+        
+        if file and allowed_file(file.filename):
+            image_bytes = file.read()
+            dados_extraidos = ocr_service.extract_nota_fiscal_data(image_bytes)
+            return jsonify({'sucesso': True, 'dados': dados_extraidos})
+        else:
+            return jsonify({'erro': 'Formato de arquivo não permitido'}), 400
+    except Exception as e:
+        return jsonify({'erro': f'Erro ao processar OCR: {str(e)}'}), 500
 
 @finance_bp.route('/adicionar-boleto', methods=['GET', 'POST'])
 @login_required
