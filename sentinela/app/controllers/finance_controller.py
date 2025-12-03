@@ -96,16 +96,45 @@ def adicionar_boleto():
     
     if request.method == 'POST':
         try:
-            status = request.form.get('status', 'A vencer')
-            codigo = request.form.get('codigo')
-            vencimento_str = request.form.get('vencimento')
-            valor = float(request.form.get('valor', 0))
-            tipo = request.form.get('tipo')
-            descricao = request.form.get('descricao')
-            fornecedor_id = request.form.get('fornecedor_id')
+            # Validação de campos obrigatórios
+            codigo = request.form.get('codigo', '').strip()
+            vencimento_str = request.form.get('vencimento', '').strip()
+            valor_str = request.form.get('valor', '').strip()
+            status = request.form.get('status', 'A vencer').strip()
+            tipo = request.form.get('tipo', '').strip()
+            descricao = request.form.get('descricao', '').strip()
+            fornecedor_id_str = request.form.get('fornecedor_id', '').strip()
             
-            vencimento = datetime.strptime(vencimento_str, '%Y-%m-%d').date()
-            fornecedor_id = int(fornecedor_id) if fornecedor_id else None
+            # Validações
+            erros = []
+            if not codigo:
+                erros.append("Código de barras é obrigatório")
+            if not vencimento_str:
+                erros.append("Data de vencimento é obrigatória")
+            if not valor_str:
+                erros.append("Valor é obrigatório")
+            
+            if erros:
+                return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro=" | ".join(erros))
+            
+            try:
+                valor = float(valor_str)
+                if valor <= 0:
+                    return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro="Valor deve ser maior que zero")
+            except ValueError:
+                return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro="Valor inválido")
+            
+            try:
+                vencimento = datetime.strptime(vencimento_str, '%Y-%m-%d').date()
+            except ValueError:
+                return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro="Data de vencimento inválida")
+            
+            fornecedor_id = None
+            if fornecedor_id_str:
+                try:
+                    fornecedor_id = int(fornecedor_id_str)
+                except ValueError:
+                    pass
             
             finance_service.criar_boleto(
                 status=status,
@@ -118,7 +147,7 @@ def adicionar_boleto():
             )
             return redirect(url_for('finance.boletos'))
         except Exception as e:
-            return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro=str(e))
+            return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
     
     return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario)
 
@@ -130,16 +159,45 @@ def adicionar_nota_fiscal():
     
     if request.method == 'POST':
         try:
-            codigo = request.form.get('codigo')
-            recebimento_str = request.form.get('recebimento')
-            valor = float(request.form.get('valor', 0))
-            tipo = request.form.get('tipo')
-            descricao = request.form.get('descricao')
+            # Validação de campos obrigatórios
+            codigo = request.form.get('codigo', '').strip()
+            recebimento_str = request.form.get('recebimento', '').strip()
+            valor_str = request.form.get('valor', '').strip()
+            tipo = request.form.get('tipo', '').strip()
+            descricao = request.form.get('descricao', '').strip()
             pago = request.form.get('pago') == 'on'
-            fornecedor_id = request.form.get('fornecedor_id')
+            fornecedor_id_str = request.form.get('fornecedor_id', '').strip()
             
-            recebimento = datetime.strptime(recebimento_str, '%Y-%m-%d').date()
-            fornecedor_id = int(fornecedor_id) if fornecedor_id else None
+            # Validações
+            erros = []
+            if not codigo:
+                erros.append("Número da nota é obrigatório")
+            if not recebimento_str:
+                erros.append("Data de recebimento é obrigatória")
+            if not valor_str:
+                erros.append("Valor é obrigatório")
+            
+            if erros:
+                return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro=" | ".join(erros))
+            
+            try:
+                valor = float(valor_str)
+                if valor <= 0:
+                    return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro="Valor deve ser maior que zero")
+            except ValueError:
+                return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro="Valor inválido")
+            
+            try:
+                recebimento = datetime.strptime(recebimento_str, '%Y-%m-%d').date()
+            except ValueError:
+                return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro="Data de recebimento inválida")
+            
+            fornecedor_id = None
+            if fornecedor_id_str:
+                try:
+                    fornecedor_id = int(fornecedor_id_str)
+                except ValueError:
+                    pass
             
             finance_service.criar_nota_fiscal(
                 codigo=codigo,
@@ -152,6 +210,6 @@ def adicionar_nota_fiscal():
             )
             return redirect(url_for('finance.notas_fiscais'))
         except Exception as e:
-            return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro=str(e))
+            return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro=f"Erro ao salvar: {str(e)}")
     
     return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario)

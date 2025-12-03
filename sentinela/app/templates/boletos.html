@@ -49,7 +49,15 @@
                         <td>{{ boleto.codigo }}</td>
                         <td>{{ boleto.vencimento.strftime('%d/%m/%Y') }}</td>
                         <td>R$ {{ "%.2f"|format(boleto.valor) }}</td>
-                        <td><span class="status-badge" style="background-color: {% if boleto.status == 'A vencer' %}#ffc107{% elif boleto.status == 'Pagos' %}#28a745{% else %}#dc3545{% endif %}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ boleto.status }}</span></td>
+                        <td>
+                            {% if boleto.status == 'A vencer' %}
+                                <span class="status-badge" style="background-color: #ffc107; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ boleto.status }}</span>
+                            {% elif boleto.status == 'Pago' %}
+                                <span class="status-badge" style="background-color: #28a745; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ boleto.status }}</span>
+                            {% else %}
+                                <span class="status-badge" style="background-color: #dc3545; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">{{ boleto.status }}</span>
+                            {% endif %}
+                        </td>
                         <td>
                             <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i
                                     class="fa-solid fa-pen"></i></button>
