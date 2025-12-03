@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block page_title %}Notas Fiscais{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <div style="display: flex; gap: 1rem;">
+            <input type="text" class="form-control" placeholder="Buscar notas..." style="width: 300px;">
+            <input type="date" class="form-control" style="width: 150px;">
+        </div>
+        <a href="{{ url_for('finance.adicionar_nota_fiscal') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nova Nota</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fornecedor</th>
+                    <th>Emissão</th>
+                    <th>Valor</th>
+                    <th>Tipo</th>
+                    <th>Pago</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if notas %}
+                    {% for nota in notas %}
+                    <tr>
+                        <td>{{ nota.codigo }}</td>
+                        <td>
+                            {% if nota.fornecedor %}
+                                <a href="{{ url_for('finance.detalhes_fornecedor', fornecedor_id=nota.fornecedor.id) }}" style="color: var(--primary-color); text-decoration: none; cursor: pointer; font-weight: 500;">
+                                    {{ nota.fornecedor.nome }}
+                                </a>
+                            {% else %}
+                                <span style="color: var(--text-light);">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ nota.recebimento.strftime('%d/%m/%Y') }}</td>
+                        <td>R$ {{ "%.2f"|format(nota.valor) }}</td>
+                        <td>{{ nota.tipo }}</td>
+                        <td>
+                            {% if nota.pago %}
+                                <span class="badge bg-success">Pago</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Não pago</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{{ url_for('finance.toggle_pago_nota', nota_id=nota.id) }}" style="display:inline">
+                                <button class="btn btn-sm" type="submit" title="Alternar status pago" style="padding: 0.25rem 0.5rem;">
+                                    {% if nota.pago %}
+                                        <i class="fa-solid fa-xmark" style="color:#ffffff"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-check" style="color:#000000"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-download"></i></button>
+                            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-pen"></i></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">
+                            <p style="color: var(--text-light);">Nenhuma nota fiscal cadastrada.</p>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
