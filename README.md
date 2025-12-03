@@ -1,146 +1,87 @@
-# 🛡️ Sentinela - Sistema de Gestão Financeira
+# Sentinela - Project Plan & Architecture
 
-Sistema web para gestão de boletos e notas fiscais, desenvolvido em Python com Flask.
+## Visão Geral
+O **Sentinela** é uma aplicação para gestão de boletos e notas fiscais, permitindo que usuários se cadastrem, visualizem seus documentos financeiros e acompanhem o status de pagamentos.
 
-## 📋 Características
+Este projeto segue os princípios da **Programação Orientada a Objetos (POO)** e o **Princípio da Responsabilidade Única (SRP)**, estruturado em camadas para garantir manutenibilidade e escalabilidade.
 
-- ✅ Autenticação de usuários com Flask-Login
-- ✅ Gestão de boletos (cadastro, listagem, controle de vencimento)
-- ✅ Gestão de notas fiscais (cadastro, listagem, marcação de pagamento)
-- ✅ Cadastro de fornecedores
-- ✅ Dashboard com resumo financeiro
-- ✅ Isolamento de dados por usuário
-- ✅ Senhas protegidas com hash (Werkzeug)
+## Arquitetura do Projeto
 
-## 🏗️ Arquitetura
+O projeto será desenvolvido em **Python** utilizando o framework **Flask**. A arquitetura adotada separa a aplicação em camadas lógicas:
 
-O projeto segue uma **arquitetura em camadas** (Layered Architecture):
+1.  **Models (Domínio)**: Definição das classes e regras de negócio fundamentais.
+2.  **Repositories (Persistência)**: Abstração do acesso a dados (Banco de Dados).
+3.  **Services (Aplicação)**: Regras de negócio complexas e orquestração entre repositórios e models.
+4.  **Controllers/Views (Interface)**: Endpoints da API (Flask Blueprints) que recebem as requisições e retornam respostas.
 
-```
-Controllers → Services → Repositories → Models
-```
+## Diagrama de Classes
 
-- **Controllers**: Rotas HTTP e endpoints
-- **Services**: Lógica de negócio
-- **Repositories**: Acesso ao banco de dados
-- **Models**: Entidades do domínio (SQLAlchemy ORM)
+<img width="692" height="668" alt="image" src="https://github.com/user-attachments/assets/a2e2562a-26f9-4963-8b89-8e2a5b255811" />
 
-## 🚀 Instalação e Execução
-
-### Pré-requisitos
-
-- Python 3.7 ou superior
-- pip (gerenciador de pacotes Python)
-
-### Passo a Passo
-
-1. **Clone o repositório:**
-   ```bash
-   git clone <url-do-repositorio>
-   cd sentinela
-   ```
-
-2. **Instale as dependências:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Execute a aplicação:**
-   ```bash
-   python run.py
-   ```
-
-4. **Acesse no navegador:**
-   ```
-   http://localhost:5000
-   ```
-
-### Popular com Dados de Teste (Opcional)
-
-Para popular o banco de dados com dados de exemplo:
-
-```bash
-python instance/seed_db.py
-```
-
-**Credenciais de teste:**
-- Email: `teste@email.com`
-- Senha: `senha123`
-
-## 📁 Estrutura do Projeto
+## Estrutura de Diretórios
 
 ```
 sentinela/
 ├── app/
-│   ├── controllers/      # Rotas HTTP (Blueprints)
-│   ├── services/         # Lógica de negócio
-│   ├── repositories/     # Acesso ao banco de dados
-│   ├── models/           # Modelos SQLAlchemy
-│   └── templates/        # Templates HTML (Flask)
-├── instance/             # Banco de dados SQLite
-├── config.py             # Configurações
-├── run.py               # Ponto de entrada
-└── requirements.txt      # Dependências
+│   ├── __init__.py          # Inicialização do Flask e configuração
+│   ├── models/              # Camada de Domínio
+│   │   ├── __init__.py
+│   │   ├── usuario.py
+│   │   ├── fornecedor.py
+│   │   ├── nota_fiscal.py
+│   │   └── boleto.py
+│   ├── repositories/        # Camada de Persistência
+│   │   ├── __init__.py
+│   │   ├── usuario_repository.py
+│   │   ├── fornecedor_repository.py
+│   │   ├── nota_fiscal_repository.py
+│   │   └── boleto_repository.py
+│   ├── services/            # Camada de Serviço
+│   │   ├── __init__.py
+│   │   ├── auth_service.py
+│   │   └── finance_service.py
+│   └── controllers/         # Camada de Interface (Rotas)
+│       ├── __init__.py
+│       ├── auth_controller.py
+│       └── finance_controller.py
+├── config.py                # Configurações do projeto
+├── run.py                   # Ponto de entrada da aplicação
+├── requirements.txt         # Dependências
+└── README.md                # Documentação
 ```
 
-## 🗄️ Banco de Dados
+## Detalhamento das Camadas
 
-O projeto usa **SQLite** como banco de dados. O arquivo `instance/sentinela.db` é criado automaticamente na primeira execução.
+### 1. Models
+Classes que representam as entidades do sistema conforme o diagrama.
+*   **Usuario**: Dados pessoais e de acesso.
+*   **Fornecedor**: Dados da empresa emissora.
+*   **NotaFiscal**: Detalhes da NF (valor, número, emissão).
+*   **Boleto**: Detalhes do boleto (valor, vencimento, código de barras).
 
-### Estrutura das Tabelas
+### 2. Repositories
+Responsáveis por operações de CRUD.
+*   **UsuarioRepository**: Salvar, buscar por email/id.
+*   **FinanceRepository**: Salvar e buscar boletos e notas fiscais, filtrar por status (vencido, pago, a vencer).
 
-- **usuarios**: Dados dos usuários do sistema
-- **fornecedores**: Cadastro de fornecedores
-- **boletos**: Boletos cadastrados (vinculados a usuários)
-- **notas_fiscais**: Notas fiscais cadastradas (vinculadas a usuários)
+### 3. Services
+Lógica de negócio.
+*   **AuthService**: Registro de usuário, login, validação de token.
+*   **FinanceService**:
+    *   Cálculo de totais (vencidos, a vencer, pagos).
+    *   Associação de documentos a usuários e fornecedores.
+    *   Regras de validação de datas.
 
-## 🔐 Segurança
+### 4. Controllers
+Endpoints da API.
+*   **Auth**: `/register`, `/login`, `/profile`.
+*   **Finance**:
+    *   `/boletos` (GET, POST)
+    *   `/notas-fiscais` (GET, POST)
+    *   `/dashboard/summary` (GET - para os cards de resumo)
 
-- Senhas são armazenadas como **hash** (não texto puro)
-- Autenticação gerenciada por **Flask-Login**
-- Cada usuário só acessa seus próprios dados
-- Validação de permissões antes de operações
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Flask**: Framework web
-- **SQLAlchemy**: ORM para banco de dados
-- **Flask-Login**: Gerenciamento de autenticação
-- **Werkzeug**: Hash de senhas
-- **SQLite**: Banco de dados
-
-## 📝 Notas Importantes
-
-1. **Primeira Execução**: O banco de dados será criado automaticamente. Se você tiver um banco antigo com estrutura diferente, ele será recriado automaticamente.
-
-2. **Desenvolvimento**: O projeto está configurado para modo de desenvolvimento (`debug=True`). Para produção, ajuste as configurações em `config.py`.
-
-3. **Banco de Dados**: O arquivo `instance/sentinela.db` é criado automaticamente. Este arquivo está no `.gitignore` e não deve ser commitado.
-
-## 🐛 Solução de Problemas
-
-### Erro: "no such column: usuarios.senha_hash"
-
-Se você encontrar este erro, significa que há um banco de dados antigo. A aplicação tentará recriar automaticamente. Se o problema persistir:
-
-1. Delete o arquivo `instance/sentinela.db`
-2. Execute a aplicação novamente
-3. O banco será criado com a estrutura correta
-
-### Erro ao fazer login
-
-- Verifique se o usuário existe no banco de dados
-- Execute o script de seed para criar usuário de teste: `python instance/seed_db.py`
-
-## 📄 Licença
-
-Este projeto foi desenvolvido como trabalho acadêmico de POO (Programação Orientada a Objetos).
-
-## 👥 Contribuição
-
-Este é um projeto acadêmico. Para sugestões ou melhorias, abra uma issue no repositório.
-
----
-
-**Desenvolvido com ❤️ usando Flask e Python**
-
+## Tecnologias
+*   **Linguagem**: Python 3.x
+*   **Framework Web**: Flask
+*   **Banco de Dados**: SQLite (Dev) / PostgreSQL (Prod)
+*   **ORM**: SQLAlchemy
