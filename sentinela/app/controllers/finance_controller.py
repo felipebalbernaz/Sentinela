@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, session
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash
 from app.services.finance_service import FinanceService
 from app.repositories.usuario_repository import UsuarioRepository
 from app.repositories.fornecedor_repository import FornecedorRepository
 from functools import wraps
-from flask import request
+from datetime import datetime
 
 finance_bp = Blueprint('finance', __name__)
 finance_service = FinanceService()
@@ -87,3 +87,71 @@ def detalhes_fornecedor(fornecedor_id):
     if not fornecedor:
         return redirect(url_for('finance.fornecedores'))
     return render_template('detalhes_fornecedor.html', fornecedor=fornecedor, usuario=dados_usuario)
+
+@finance_bp.route('/adicionar-boleto', methods=['GET', 'POST'])
+@requer_autenticacao
+def adicionar_boleto():
+    dados_usuario = obter_dados_usuario()
+    fornecedores = finance_service.listar_fornecedores()
+    
+    if request.method == 'POST':
+        try:
+            status = request.form.get('status', 'A vencer')
+            codigo = request.form.get('codigo')
+            vencimento_str = request.form.get('vencimento')
+            valor = float(request.form.get('valor', 0))
+            tipo = request.form.get('tipo')
+            descricao = request.form.get('descricao')
+            fornecedor_id = request.form.get('fornecedor_id')
+            
+            vencimento = datetime.strptime(vencimento_str, '%Y-%m-%d').date()
+            fornecedor_id = int(fornecedor_id) if fornecedor_id else None
+            
+            finance_service.criar_boleto(
+                status=status,
+                codigo=codigo,
+                vencimento=vencimento,
+                valor=valor,
+                tipo=tipo,
+                descricao=descricao,
+                fornecedor_id=fornecedor_id
+            )
+            return redirect(url_for('finance.boletos'))
+        except Exception as e:
+            return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario, erro=str(e))
+    
+    return render_template('adicionar_boleto.html', fornecedores=fornecedores, usuario=dados_usuario)
+
+@finance_bp.route('/adicionar-nota-fiscal', methods=['GET', 'POST'])
+@requer_autenticacao
+def adicionar_nota_fiscal():
+    dados_usuario = obter_dados_usuario()
+    fornecedores = finance_service.listar_fornecedores()
+    
+    if request.method == 'POST':
+        try:
+            codigo = request.form.get('codigo')
+            recebimento_str = request.form.get('recebimento')
+            valor = float(request.form.get('valor', 0))
+            tipo = request.form.get('tipo')
+            descricao = request.form.get('descricao')
+            pago = request.form.get('pago') == 'on'
+            fornecedor_id = request.form.get('fornecedor_id')
+            
+            recebimento = datetime.strptime(recebimento_str, '%Y-%m-%d').date()
+            fornecedor_id = int(fornecedor_id) if fornecedor_id else None
+            
+            finance_service.criar_nota_fiscal(
+                codigo=codigo,
+                recebimento=recebimento,
+                valor=valor,
+                tipo=tipo,
+                descricao=descricao,
+                fornecedor_id=fornecedor_id,
+                pago=pago
+            )
+            return redirect(url_for('finance.notas_fiscais'))
+        except Exception as e:
+            return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario, erro=str(e))
+    
+    return render_template('adicionar_nota_fiscal.html', fornecedores=fornecedores, usuario=dados_usuario)
