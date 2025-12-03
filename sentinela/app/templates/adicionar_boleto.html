@@ -8,26 +8,12 @@
         <h3 style="margin: 0;">Novo Boleto</h3>
     </div>
     
-    <form method="POST" enctype="multipart/form-data" style="padding: 2rem;" id="boletoForm">
+    <form method="POST" style="padding: 2rem;">
         {% if erro %}
         <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 4px solid #dc3545;">
             <strong>❌ Erro:</strong> {{ erro }}
         </div>
         {% endif %}
-
-        <div style="margin-bottom: 1.5rem; padding: 1.5rem; background-color: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
-            <label for="imagem_boleto" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
-                📷 Escanear Boleto com OCR (Opcional)
-            </label>
-            <input type="file" id="imagem_boleto" name="imagem_boleto" accept="image/*" style="margin-bottom: 0.5rem;">
-            <button type="button" id="btnProcessarOCR" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">
-                🔍 Processar Imagem com OCR
-            </button>
-            <div id="ocrStatus" style="margin-top: 0.5rem; display: none;"></div>
-            <div id="previewImagem" style="margin-top: 1rem; display: none;">
-                <img id="imagemPreview" src="" alt="Preview" style="max-width: 100%; border-radius: 4px;">
-            </div>
-        </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label for="codigo" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Código de Barras*</label>
@@ -79,76 +65,4 @@
         </div>
     </form>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const imagemInput = document.getElementById('imagem_boleto');
-    const btnProcessarOCR = document.getElementById('btnProcessarOCR');
-    const ocrStatus = document.getElementById('ocrStatus');
-    const previewImagem = document.getElementById('previewImagem');
-    const imagemPreview = document.getElementById('imagemPreview');
-    
-    // Preview da imagem
-    imagemInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagemPreview.src = e.target.result;
-                previewImagem.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    // Processar OCR
-    btnProcessarOCR.addEventListener('click', function() {
-        const file = imagemInput.files[0];
-        if (!file) {
-            ocrStatus.innerHTML = '<div style="color: #dc3545; padding: 0.5rem;">⚠️ Por favor, selecione uma imagem primeiro.</div>';
-            ocrStatus.style.display = 'block';
-            return;
-        }
-        
-        const formData = new FormData();
-        formData.append('imagem', file);
-        
-        ocrStatus.innerHTML = '<div style="color: #0d6efd; padding: 0.5rem;">⏳ Processando imagem com OCR...</div>';
-        ocrStatus.style.display = 'block';
-        btnProcessarOCR.disabled = true;
-        
-        fetch('{{ url_for("finance.processar_ocr_boleto") }}', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            btnProcessarOCR.disabled = false;
-            if (data.sucesso && data.dados) {
-                // Preencher campos com dados extraídos
-                if (data.dados.codigo) {
-                    document.getElementById('codigo').value = data.dados.codigo;
-                }
-                if (data.dados.vencimento) {
-                    document.getElementById('vencimento').value = data.dados.vencimento;
-                }
-                if (data.dados.valor) {
-                    document.getElementById('valor').value = data.dados.valor;
-                }
-                if (data.dados.descricao) {
-                    document.getElementById('descricao').value = data.dados.descricao;
-                }
-                
-                ocrStatus.innerHTML = '<div style="color: #198754; padding: 0.5rem;">✅ OCR processado com sucesso! Campos preenchidos automaticamente.</div>';
-            } else {
-                ocrStatus.innerHTML = '<div style="color: #ffc107; padding: 0.5rem;">⚠️ OCR processado, mas alguns campos podem não ter sido encontrados. Verifique os dados extraídos.</div>';
-            }
-        })
-        .catch(error => {
-            btnProcessarOCR.disabled = false;
-            ocrStatus.innerHTML = '<div style="color: #dc3545; padding: 0.5rem;">❌ Erro ao processar OCR: ' + error.message + '</div>';
-        });
-    });
-});
-</script>
 {% endblock %}

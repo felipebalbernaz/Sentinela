@@ -3,7 +3,3 @@ sqlalchemy
 flask-sqlalchemy
 flask-login
 werkzeug
-pytesseract
-Pillow
-opencv-python
-numpy
